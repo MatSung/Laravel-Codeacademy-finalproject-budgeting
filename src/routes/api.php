@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\EntryCategoryController;
 use App\Http\Controllers\EntryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -20,3 +21,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::apiResource('/entries', EntryController::class);
+Route::apiResource('/categories', EntryCategoryController::class);

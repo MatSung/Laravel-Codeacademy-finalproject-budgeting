@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreEntryRequest extends FormRequest
@@ -22,10 +23,15 @@ class StoreEntryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'amount' => 'required|float|max:10',
-            // 'transaction_date' => '',
-            'category_id' => 'required',
-            'note' => 'string"|max:255'
+            'amount' => 'required|numeric',
+            'transaction_date' => 'nullable|date_format:Y-m-d H:i:s',
+            //https://laravel.com/docs/10.x/validation#rule-exists
+            'category_id' => 'required|exists:App\Models\EntryCategory,id',
+            'subcategory_id' => [
+                'nullable',
+                Rule::exists('entry_Subcategories','id')->where('parent_id', request('category_id'))
+            ],
+            'note' => 'nullable|string|max:255'
         ];
     }
     public function messages(): array
@@ -33,6 +39,8 @@ class StoreEntryRequest extends FormRequest
     return [
         'amount.required' => 'An amount is required',
         'category_id.required' => 'A category is required',
+        'category_id.exists' => 'The specified category does not exist',
+        'subcategory_id.exists' => 'The specified subcategory does not exist'
     ];
 }
 }

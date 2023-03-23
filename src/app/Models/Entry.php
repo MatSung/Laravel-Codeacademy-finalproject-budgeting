@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -19,16 +20,41 @@ class Entry extends Model
         'note'
     ];
 
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'category_id',
+        'subcategory_id'
+    ];
+
+    protected $with = [
+        'category',
+        'subcategory'
+    ];
+
+    // https://laravel.com/docs/10.x/eloquent#default-attribute-values
     // protected $attributes = [];
 
 
-    public function entryCategory()
+    public function category()
     {
-        return $this->hasOne(EntryCategory::class, 'id', 'category_id');
+        return $this->belongsTo(EntryCategory::class, 'category_id', 'id');
     }
 
-    public function entrySubcategory()
+    public function subcategory()
     {
-        return $this->hasOne(EntrySubcategory::class, 'id', 'subcategory_id');
+        return $this->belongsTo(EntrySubcategory::class, 'subcategory_id', 'id');
+    }
+
+
+    //https://laravel.com/docs/10.x/eloquent#query-scopes
+    public function scopeIncomes(Builder $query): void
+    {
+        $query->where('amount', '>', 0);
+    }
+
+    public function scopeExpenses(Builder $query): void
+    {
+        $query->where('amount', '<', 0);
     }
 }

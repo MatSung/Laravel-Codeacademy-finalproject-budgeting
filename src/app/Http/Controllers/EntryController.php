@@ -7,38 +7,24 @@ use App\Http\Requests\UpdateEntryRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Models\Entry;
+use DateTime;
+use Illuminate\Http\JsonResponse;
 
 class EntryController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request, Response $response)
+    public function index(): JsonResponse
     {
-        $entries = [];
-        $dbEntries = Entry::with(['entryCategory','entrySubcategory'])
-            ->get();
-        foreach ( $dbEntries as $key => $value) {
-            array_push(
-                $entries,
-                [
-                    'id' => $value->id,
-                    'amount' =>$value->amount,
-                    'category_id' =>$value->category_id,
-                    'subcategory_id' =>$value->subcategory_id,
-                    'category' =>$value->entryCategory->name,
-                    'subcategory' =>$value->entrySubcategory !== null ? $value->entrySubcategory->name : null,
-                    'note' =>$value->note,
-                ]
-            );
-        }
-        return response()->json($entries);
+        $dbEntries = Entry::all()->toArray();
+        return response()->json($dbEntries);
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Request $request, Response $response)
+    public function create()
     {
         //
     }
@@ -46,19 +32,19 @@ class EntryController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreEntryRequest $request)
+    public function store(StoreEntryRequest $request): JsonResponse
     {
-        $validated = $request->validate();
-        dd($validated);
-        // $request('transaction_date')
+        $validated = $request->validated();
+        $validated['transaction_date'] = $validated['transaction_date'] ?? now()->toDateTimeString();
+        return response()->json(Entry::create($validated));
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Entry $entry)
+    public function show(Entry $entry): JsonResponse
     {
-        //
+        return response()->json($entry);
     }
 
     /**
@@ -72,16 +58,21 @@ class EntryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateEntryRequest $request, Entry $entry)
+    public function update(UpdateEntryRequest $request, Entry $entry): JsonResponse
     {
-        //
+        $validated = $request->validated();
+        $validated['transaction_date'] = $validated['transaction_date'] ?? now()->toDateTimeString();
+
+        return response()->json($entry->update($validated));
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Entry $entry)
+    public function destroy(Entry $entry): Response
     {
-        //
+        // if exists, delete
+        $entry->delete();
+        return response();
     }
 }

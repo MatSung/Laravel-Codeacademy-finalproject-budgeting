@@ -3,6 +3,9 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -44,5 +47,12 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+
+         $this->renderable(function (NotFoundHttpException $e, Request $request) {
+            if($e->getPrevious() instanceof ModelNotFoundException){
+                return response()->json(['error'=>'Provided id does not match any entries'], 404);
+            }
+         });
     }
+
 }

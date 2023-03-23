@@ -13,8 +13,18 @@ class EntryCategory extends Model
         'name'
     ];
 
+    protected $hidden = [
+        'created_at',
+        'updated_at'
+    ];
+
     public function entry()
     {
-        return $this->belongsTo(Entry::class);
+        return $this->hasMany(Entry::class);
+    }
+
+    public function subcategories()
+    {
+        return $this->hasMany(EntrySubcategory::class, 'parent_id', 'id');
     }
 }

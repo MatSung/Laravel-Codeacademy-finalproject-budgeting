@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateEntryRequest extends FormRequest
@@ -11,7 +12,7 @@ class UpdateEntryRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +23,14 @@ class UpdateEntryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'amount' => 'required',
+            'transaction_date' => 'required|date_format:Y-m-d H:i:s',
+            'category_id' => 'required|exists:App\Models\EntryCategory,id',
+            'subcategory_id' => [
+                'nullable',
+                Rule::exists('entry_Subcategories','id')->where('parent_id', request('category_id'))
+            ],
+            'note' => 'nullable|string|max:255'
         ];
     }
 }
