@@ -9,9 +9,15 @@ class EntrySubcategory extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'name',
+        'parent_id'
+    ];
+
     protected $hidden = [
         'created_at',
-        'updated_at'
+        'updated_at',
+        'parent_id'
     ];
 
     public function entries()

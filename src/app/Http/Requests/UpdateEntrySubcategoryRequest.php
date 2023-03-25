@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateEntrySubcategoryRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class UpdateEntrySubcategoryRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +23,36 @@ class UpdateEntrySubcategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => [
+                // not required if i just update the parent
+                'required_without:parent_id',
+                'string',
+                'max:20',
+                // check that an identical subcategory does not exist with the same parent id
+                Rule::unique('entry_subcategories')
+                    ->where('parent_id', request('parent_id') ?? $this->route('entry_subcategory')->id)
+            ],
+            // if no parent id is provided, check that the new name is unique to the parent id held by the subcategory
+            'parent_id' => [
+                'required_without:name',
+                'numeric',
+                'exists:entry_categories,id',
+                Rule::unique('entry_subcategories')
+                    ->where('name', request('name') ?? $this->route('entry_subcategory')->name)
+            ]
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'A name is required',
+            'name.unique' => 'Subcategory for given parent category already exists',
+            'name.string' => 'Name must be a string',
+            'name.max' => 'Name must not be longer than 20 symbols',
+            'parent_id.required' => 'Parent_id is required',
+            'parent_id.exists' => 'Provided parent category does not exist',
+            'parent_id.unique' => 'A subcategory with the same name for the provided parent_id already exists'
         ];
     }
 }

@@ -13,9 +13,9 @@ class EntryCategoryController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index()
     {
-        $listSubcategories = $request->all()['subcategories'] ?? false;
+        $listSubcategories = request('subcategories') ?? false;
 
         $queryBuilder = EntryCategory::query();
 
@@ -41,7 +41,8 @@ class EntryCategoryController extends Controller
      */
     public function store(StoreEntryCategoryRequest $request)
     {
-        //
+        $validated = $request->validated();
+        return response()->json(EntryCategory::create($validated), 201);
     }
 
     /**
@@ -49,7 +50,13 @@ class EntryCategoryController extends Controller
      */
     public function show(EntryCategory $entryCategory)
     {
-        //
+        $listSubcategories = request('subcategories') ?? false;
+
+        if($listSubcategories){
+            $entryCategory->load('subcategories');;
+        }
+
+        return response()->json($entryCategory);
     }
 
     /**
@@ -65,7 +72,8 @@ class EntryCategoryController extends Controller
      */
     public function update(UpdateEntryCategoryRequest $request, EntryCategory $entryCategory)
     {
-        //
+        $validated = $request->validated();
+        return response()->json($entryCategory->update($validated), 200);
     }
 
     /**
@@ -73,6 +81,7 @@ class EntryCategoryController extends Controller
      */
     public function destroy(EntryCategory $entryCategory)
     {
-        //
+        $entryCategory->delete();
+        return response();
     }
 }

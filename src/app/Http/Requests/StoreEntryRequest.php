@@ -29,18 +29,20 @@ class StoreEntryRequest extends FormRequest
             'category_id' => 'required|exists:App\Models\EntryCategory,id',
             'subcategory_id' => [
                 'nullable',
-                Rule::exists('entry_Subcategories','id')->where('parent_id', request('category_id'))
+                Rule::exists('entry_subcategories', 'id')->where('parent_id', request('category_id'))
             ],
             'note' => 'nullable|string|max:255'
         ];
     }
     public function messages(): array
-{
-    return [
-        'amount.required' => 'An amount is required',
-        'category_id.required' => 'A category is required',
-        'category_id.exists' => 'The specified category does not exist',
-        'subcategory_id.exists' => 'The specified subcategory does not exist'
-    ];
-}
+    {
+        return [
+            'amount.required' => 'An amount is required',
+            'amount.numeric' => 'The amount must be a number',
+            'transaction_date.date_format' => 'The provided format is incorrect, the correct format is Y-m-d H:i:s',
+            'category_id.required' => 'A category is required',
+            'category_id.exists' => 'The specified category does not exist',
+            'subcategory_id.exists' => 'The specified subcategory does not exist'
+        ];
+    }
 }

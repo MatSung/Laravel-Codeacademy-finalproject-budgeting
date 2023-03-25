@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreEntrySubcategoryRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class StoreEntrySubcategoryRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +23,26 @@ class StoreEntrySubcategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => [
+                'required',
+                'string',
+                'max:20',
+                // check that an identical subcategory does not exist with the same parent id
+                Rule::unique('entry_subcategories')->where('parent_id', request('parent_id'))
+            ],
+            'parent_id' => 'required|numeric|exists:entry_categories,id'
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'A name is required',
+            'name.unique' => 'Subcategory for given parent category already exists',
+            'name.string' => 'Name must be a string',
+            'name.max' => 'Name must not be longer than 20 symbols',
+            'parent_id.required' => 'Parent_id is required',
+            'parent_id.exists' => 'Provided parent category does not exist'
         ];
     }
 }

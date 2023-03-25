@@ -17,6 +17,7 @@ class EntryController extends Controller
      */
     public function index(): JsonResponse
     {
+        // add some variables to filter by date, amount, category and so on
         $dbEntries = Entry::all()->toArray();
         return response()->json($dbEntries);
     }
@@ -36,7 +37,7 @@ class EntryController extends Controller
     {
         $validated = $request->validated();
         $validated['transaction_date'] = $validated['transaction_date'] ?? now()->toDateTimeString();
-        return response()->json(Entry::create($validated));
+        return response()->json(Entry::create($validated), 201);
     }
 
     /**
@@ -62,8 +63,8 @@ class EntryController extends Controller
     {
         $validated = $request->validated();
         $validated['transaction_date'] = $validated['transaction_date'] ?? now()->toDateTimeString();
-
-        return response()->json($entry->update($validated));
+        $validated['subcategory_id'] = $validated['subcategory_id'] ?? null;
+        return response()->json($entry->update($validated), 200);
     }
 
     /**

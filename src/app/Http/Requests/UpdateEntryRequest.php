@@ -28,7 +28,7 @@ class UpdateEntryRequest extends FormRequest
             'category_id' => 'required|exists:App\Models\EntryCategory,id',
             'subcategory_id' => [
                 'nullable',
-                Rule::exists('entry_Subcategories','id')->where('parent_id', request('category_id'))
+                Rule::exists('entry_subcategories','id')->where('parent_id', request('category_id'))
             ],
             'note' => 'nullable|string|max:255'
         ];

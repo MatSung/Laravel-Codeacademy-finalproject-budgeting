@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreEntrySubcategoryRequest;
 use App\Http\Requests\UpdateEntrySubcategoryRequest;
 use App\Models\EntrySubcategory;
+use Illuminate\Support\Facades;
 
 class EntrySubcategoryController extends Controller
 {
@@ -13,7 +14,17 @@ class EntrySubcategoryController extends Controller
      */
     public function index()
     {
-        //
+        $showParent = request('showParent') ?? false;
+
+        $queryBuilder = EntrySubcategory::query();
+
+        if($showParent){
+            $queryBuilder->with('category');
+        }
+
+        $entries = $queryBuilder->get()->toArray();
+
+        return response()->json($entries);
     }
 
     /**
@@ -29,7 +40,8 @@ class EntrySubcategoryController extends Controller
      */
     public function store(StoreEntrySubcategoryRequest $request)
     {
-        //
+        $validated = $request->validated();
+        return response()->json(EntrySubcategory::create($validated), 201);
     }
 
     /**
@@ -37,7 +49,13 @@ class EntrySubcategoryController extends Controller
      */
     public function show(EntrySubcategory $entrySubcategory)
     {
-        //
+        $showParent = request('showParent') ?? false;
+
+        if($showParent){
+            $entrySubcategory->load('category');
+        }
+
+        return response()->json($entrySubcategory);
     }
 
     /**
@@ -53,7 +71,9 @@ class EntrySubcategoryController extends Controller
      */
     public function update(UpdateEntrySubcategoryRequest $request, EntrySubcategory $entrySubcategory)
     {
-        //
+
+        $validated = $request->validated();
+        return response()->json($entrySubcategory->update($validated), 200);
     }
 
     /**
@@ -61,6 +81,7 @@ class EntrySubcategoryController extends Controller
      */
     public function destroy(EntrySubcategory $entrySubcategory)
     {
-        //
+        $entrySubcategory->delete();
+        return response();
     }
 }

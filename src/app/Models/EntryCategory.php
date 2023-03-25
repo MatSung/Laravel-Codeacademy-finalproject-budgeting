@@ -9,6 +9,8 @@ class EntryCategory extends Model
 {
     use HasFactory;
 
+    protected $table = 'entry_categories';
+
     protected $fillable = [
         'name'
     ];
@@ -18,7 +20,7 @@ class EntryCategory extends Model
         'updated_at'
     ];
 
-    public function entry()
+    public function entries()
     {
         return $this->hasMany(Entry::class);
     }
