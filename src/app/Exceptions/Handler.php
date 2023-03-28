@@ -48,11 +48,15 @@ class Handler extends ExceptionHandler
             //
         });
 
-         $this->renderable(function (NotFoundHttpException $e, Request $request) {
-            if($e->getPrevious() instanceof ModelNotFoundException){
-                return response()->json(['error'=>'Provided id does not match any entries'], 404);
+        $this->renderable(function (NotFoundHttpException $e, Request $request) {
+            if ($e->getPrevious() instanceof ModelNotFoundException) {
+                return response()->json(
+                    [
+                        'error' => 'Provided id does not match any entries'
+                    ],
+                    404
+                );
             }
-         });
+        });
     }
-
 }

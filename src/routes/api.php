@@ -28,3 +28,4 @@ Route::apiResource('/categories', EntryCategoryController::class)->parameters([
 Route::apiResource('/subcategories', EntrySubcategoryController::class)->parameters([
     'subcategories' => 'entry_subcategory'
 ]);
+

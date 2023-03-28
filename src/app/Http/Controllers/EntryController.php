@@ -18,8 +18,18 @@ class EntryController extends Controller
     public function index(): JsonResponse
     {
         // add some variables to filter by date, amount, category and so on
-        $dbEntries = Entry::all()->toArray();
-        return response()->json($dbEntries);
+        // sorting
+        // pages
+        // by category?
+        $sort = request('sort') ?? false;
+
+        $queryBuilder = Entry::query();
+
+        if ($sort){
+            $queryBuilder->latest('transaction_date');
+        }
+        $entries = $queryBuilder->get()->toArray();
+        return response()->json($entries);
     }
 
     /**

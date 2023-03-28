@@ -24,21 +24,24 @@ class UpdateEntrySubcategoryRequest extends FormRequest
     {
         return [
             'name' => [
-                // not required if i just update the parent
                 'required_without:parent_id',
                 'string',
                 'max:20',
-                // check that an identical subcategory does not exist with the same parent id
                 Rule::unique('entry_subcategories')
-                    ->where('parent_id', request('parent_id') ?? $this->route('entry_subcategory')->id)
+                    ->where(
+                        'parent_id',
+                        request('parent_id') ?? $this->route('entry_subcategory')->id
+                    )
             ],
-            // if no parent id is provided, check that the new name is unique to the parent id held by the subcategory
             'parent_id' => [
                 'required_without:name',
                 'numeric',
                 'exists:entry_categories,id',
                 Rule::unique('entry_subcategories')
-                    ->where('name', request('name') ?? $this->route('entry_subcategory')->name)
+                    ->where(
+                        'name',
+                        request('name') ?? $this->route('entry_subcategory')->name
+                    )
             ]
         ];
     }

@@ -18,7 +18,7 @@ class EntrySubcategoryController extends Controller
 
         $queryBuilder = EntrySubcategory::query();
 
-        if($showParent){
+        if ($showParent) {
             $queryBuilder->with('category');
         }
 
@@ -51,7 +51,7 @@ class EntrySubcategoryController extends Controller
     {
         $showParent = request('showParent') ?? false;
 
-        if($showParent){
+        if ($showParent) {
             $entrySubcategory->load('category');
         }
 

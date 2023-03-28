@@ -1,6 +1,12 @@
 <?php
 
+// DONT FORGET TO REMOVE THIS
+use App\Models\Entry;
+////////////////////////////
+
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,5 +20,11 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return Inertia::render('Budgeting/Dashboard',[
+        'entries' => Entry::all()->toArray()
+    ]);
+});
+
+Route::get('/tester', function() {
+    return(asset('storage/public/edit.svg'));
 });

@@ -19,12 +19,12 @@ class EntryCategoryController extends Controller
 
         $queryBuilder = EntryCategory::query();
 
-        if($listSubcategories){
+        if ($listSubcategories) {
             $queryBuilder->with('subcategories');;
         }
-        
+
         $entries = $queryBuilder->get()->toArray();
-        
+
         return response()->json($entries);
     }
 
@@ -52,7 +52,7 @@ class EntryCategoryController extends Controller
     {
         $listSubcategories = request('subcategories') ?? false;
 
-        if($listSubcategories){
+        if ($listSubcategories) {
             $entryCategory->load('subcategories');;
         }
 
