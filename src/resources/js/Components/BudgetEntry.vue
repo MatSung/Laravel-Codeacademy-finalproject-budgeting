@@ -22,13 +22,11 @@ const entryTypeName = computed(()=>{
         <td>{{ entryTypeName }}</td>
         <td>{{ entry.category.name }}</td>
         <td>{{ !entry.subcategory ? '' : entry.subcategory.name }}</td>
-        <td class="pl-3">{{ Math.abs(entry.amount) }}</td>
-        <td>{{entry.note}}</td>
+        <td class="pl-3">{{ Math.abs(entry.amount).toFixed(2) }}</td>
+        <td>{{ entry.note }}</td>
         <td>
             <div class="flex gap-4 justify-end pr-4">
-                <!-- <a href="#"><img class="w-4 inline-block" src="storage/public/edit.svg" alt="edit"></a> -->
                 <a class="w-4 inline-block" href="#">✏</a>
-                <!-- <a href="#"><img class="w-4 inline-block" src="icons/delete.svg" alt="delete"></a> -->
                 <a class="w-4 inline-block" href="#">✖</a>
             </div>
         </td>

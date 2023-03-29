@@ -1,22 +1,21 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Requests\StoreEntryRequest;
 use App\Http\Requests\UpdateEntryRequest;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use App\Models\Entry;
 use DateTime;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Redirect;
-use Inertia\Inertia;
-use Inertia\Response;
+use Illuminate\Http\JsonResponse;
 
-class EntryController extends Controller
+class EntryController extends ApiController
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(): Response
+    public function index(): JsonResponse
     {
         // add some variables to filter by date, amount, category and so on
         // sorting
@@ -30,9 +29,7 @@ class EntryController extends Controller
             $queryBuilder->latest('transaction_date');
         }
         $entries = $queryBuilder->get()->toArray();
-        return Inertia::render('Budgeting/Dashboard',[
-            'entries' => $entries
-        ]);
+        return response()->json($entries);
     }
 
     /**
@@ -46,12 +43,11 @@ class EntryController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreEntryRequest $request): RedirectResponse
+    public function store(StoreEntryRequest $request): JsonResponse
     {
         $validated = $request->validated();
         $validated['transaction_date'] = $validated['transaction_date'] ?? now()->toDateTimeString();
-        Entry::create($validated);
-        return redirect(route('entries.index'));
+        return response()->json(Entry::create($validated), 201);
     }
 
     /**
@@ -84,7 +80,7 @@ class EntryController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Entry $entry): RedirectResponse
+    public function destroy(Entry $entry): Response
     {
         // if exists, delete
         $entry->delete();

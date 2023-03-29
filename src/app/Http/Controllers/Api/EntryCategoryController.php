@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Requests\StoreEntryCategoryRequest;
 use App\Http\Requests\UpdateEntryCategoryRequest;
@@ -8,7 +8,7 @@ use App\Models\Entry;
 use App\Models\EntryCategory;
 use Illuminate\Http\Request;
 
-class EntryCategoryController extends Controller
+class EntryCategoryController extends ApiController
 {
     /**
      * Display a listing of the resource.

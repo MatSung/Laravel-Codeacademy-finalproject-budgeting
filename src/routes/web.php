@@ -5,6 +5,9 @@ use App\Models\Entry;
 ////////////////////////////
 
 use Illuminate\Http\RedirectResponse;
+
+use App\Http\Controllers\EntryController;
+
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -28,3 +31,13 @@ Route::get('/', function () {
 Route::get('/tester', function() {
     return(asset('storage/public/edit.svg'));
 });
+
+Route::resource('/dashboard', EntryController::class,[
+    'names' => [
+        'index' => 'entries.index',
+        'store' => 'entries.store',
+        'show' => 'entries.show',
+        'destroy' => 'entries.destroy',
+        'update' => 'entries.update'
+    ]
+])->except(['edit','create']);

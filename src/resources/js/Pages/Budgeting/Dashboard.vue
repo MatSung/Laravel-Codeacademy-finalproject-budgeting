@@ -1,10 +1,16 @@
 <script setup>
 
 import DefaultLayout from '@/Layouts/DefaultLayout.vue';
+import BudgetEntryAddForm from '@/Components/BudgetEntryAddForm.vue';
 import EntryTable from '@/Components/EntryTable.vue';
 import { useForm, Head } from '@inertiajs/vue3';
+import { toRaw } from 'vue';
 
-defineProps(['entries']);
+const props = defineProps(['entries']);
+
+const entries = toRaw(props.entries);
+
+console.log(entries);
 
 </script>
 
@@ -12,8 +18,9 @@ defineProps(['entries']);
     <Head title="Index" />
 
     <DefaultLayout>
+        <BudgetEntryAddForm :entries="entries"/>
         <div class="container max-w-7xl mx-auto mt-8 rounded overflow-hidden">
-            <EntryTable />
+            <EntryTable :entries="entries" />
         </div>
     </DefaultLayout>
 

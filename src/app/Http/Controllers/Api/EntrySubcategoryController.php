@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Requests\StoreEntrySubcategoryRequest;
 use App\Http\Requests\UpdateEntrySubcategoryRequest;
 use App\Models\EntrySubcategory;
 use Illuminate\Support\Facades;
 
-class EntrySubcategoryController extends Controller
+class EntrySubcategoryController extends ApiController
 {
     /**
      * Display a listing of the resource.

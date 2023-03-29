@@ -1,8 +1,8 @@
 <?php
 
-use App\Http\Controllers\EntryCategoryController;
-use App\Http\Controllers\EntryController;
-use App\Http\Controllers\EntrySubcategoryController;
+use App\Http\Controllers\Api\EntryCategoryController;
+use App\Http\Controllers\Api\EntryController;
+use App\Http\Controllers\Api\EntrySubcategoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -22,7 +22,15 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::apiResource('/entries', EntryController::class);
-Route::apiResource('/categories', EntryCategoryController::class)->parameters([
+Route::apiResource('/categories', EntryCategoryController::class,[
+    'names' => [
+        'store' => 'apiEntry.store',
+        'index' => 'apiEntry.index',
+        'show' => 'apiEntry.show',
+        'update' => 'apiEntry.update',
+        'destroy' => 'apiEntry.destroy'
+    ]
+])->parameters([
     'categories' => 'entry_category'
 ]);
 Route::apiResource('/subcategories', EntrySubcategoryController::class)->parameters([

@@ -1,21 +1,10 @@
 <script setup>
 import { reactive, ref } from 'vue'
 import BudgetEntry from './BudgetEntry.vue';
+import BudgetUtilityRow from './BudgetUtilityRow.vue';
 
-const state = reactive({entries: []});
-
-function getEntries(apiUrl) {
-    apiUrl = apiUrl || '/api/entries?sort=latest';
-    axios.get(apiUrl)
-        .then((response) => {
-            console.log(response.data)
-            state.entries = response.data;
-        })
-}
-
-
-getEntries();
-
+const props = defineProps(['entries']);
+const entries = props.entries;
 
 </script>
 
@@ -34,7 +23,8 @@ getEntries();
                 </tr>
             </thead>
             <tbody>
-                <BudgetEntry v-for="entry in state.entries" :key="entry.id" :entry="entry" />
+                <BudgetUtilityRow :entries="entries" />
+                <BudgetEntry v-for="entry in entries" :key="entry.id" :entry="entry" />
             </tbody>
         </table>
     </div>
