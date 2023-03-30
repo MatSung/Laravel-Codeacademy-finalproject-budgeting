@@ -6,7 +6,7 @@ const props = defineProps(['entries']);
 const entries = props.entries;
 
 const sum = computed(() => {
-    return entries
+    return Object.values(entries)
         .reduce((total, obj) => obj.amount + total, 0)
         .toFixed(2);
 });

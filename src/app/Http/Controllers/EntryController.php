@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreEntryRequest;
 use App\Http\Requests\UpdateEntryRequest;
 use App\Models\Entry;
+use App\Models\EntryCategory;
 use DateTime;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
@@ -22,16 +23,24 @@ class EntryController extends Controller
         // sorting
         // pages
         // by category?
-        $sort = request('sort') ?? false;
+        $sort = request('sort') ?? true;
 
         $queryBuilder = Entry::query();
 
         if ($sort){
             $queryBuilder->latest('transaction_date');
         }
+
         $entries = $queryBuilder->get()->toArray();
+
+
+        $categories = EntryCategory::with('subcategories')->get()->keyBy('id');
+
+        // dd($categories);
+
         return Inertia::render('Budgeting/Dashboard',[
-            'entries' => $entries
+            'entries' => $entries,
+            'categories' => $categories
         ]);
     }
 
@@ -57,9 +66,9 @@ class EntryController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Entry $entry): JsonResponse
+    public function show(Entry $entry)
     {
-        return response()->json($entry);
+        // return response()->json($entry);
     }
 
     /**
@@ -73,12 +82,13 @@ class EntryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateEntryRequest $request, Entry $entry): JsonResponse
+    public function update(UpdateEntryRequest $request, Entry $entry): RedirectResponse
     {
         $validated = $request->validated();
         $validated['transaction_date'] = $validated['transaction_date'] ?? now()->toDateTimeString();
         $validated['subcategory_id'] = $validated['subcategory_id'] ?? null;
-        return response()->json($entry->update($validated), 200);
+        $entry->update($validated);
+        return redirect(route('entries.index'));
     }
 
     /**
@@ -88,6 +98,6 @@ class EntryController extends Controller
     {
         // if exists, delete
         $entry->delete();
-        return response();
+        return redirect(route('entries.index'));
     }
 }

@@ -3,8 +3,12 @@
 import { useForm } from '@inertiajs/vue3';
 import InputError from '@/Components/InputError.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import { ref, reactive, onMounted } from 'vue';
 
+const props = defineProps(['entries', 'categories']);
 
+const entries = props.entries;
+const categories = props.categories;
 
 const form = useForm({
     transaction_date: '',
@@ -12,6 +16,28 @@ const form = useForm({
     subcategory_id: null,
     amount: 0,
     note: null
+});
+
+
+const subcategorySelect = ref(null);
+const categorySelect = ref(null);
+
+const hasSubcategories = ref(false);
+const currentSubcategories = ref([]);
+
+// convert received categories to an object of id's
+
+const checkSubcategories = (event) => {
+    hasSubcategories.value = false;
+    let subcategoriesToPass = categories[event.target.value].subcategories ?? [];
+    currentSubcategories.value = subcategoriesToPass;
+    if (subcategoriesToPass.length) {
+        hasSubcategories.value = true;
+    }
+};
+
+onMounted(() => {
+    categorySelect.value.value = 0;
 });
 
 </script>
@@ -26,7 +52,6 @@ const form = useForm({
                         <label for="transaction_date"
                             class="block text-md font-medium leading-6 mb-2 text-gray-900">Transaction
                             Date</label>
-
                         <input name="transaction_date" type="datetime-local" v-model="form.transaction_date"
                             max="2100-01-01T00:00" min="2000-01-01T00:00"
                             class="block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
@@ -35,19 +60,22 @@ const form = useForm({
                         <label for="category_id"
                             class="block text-md font-medium leading-6 mb-2 text-gray-900">Category</label>
 
-                        <select name="category_id" v-model="form.category_id"
+                        <select ref="categorySelect" @change="checkSubcategories" name="category_id"
+                            v-model="form.category_id"
                             class="block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                            <option value="1">asd</option>
+                            <option value="0" selected disabled>Please select a category</option>
+                            <option v-for="category in categories" :value="category.id">{{ category.name }}</option>
+
                         </select>
                     </div>
-                    <!-- appear only if category has subcategories -->
-                    <div class="col-span-1">
+                    <!-- reset the subcategory on selection of a different thing -->
+                    <div ref="subcategorySelect" class="col-span-1">
                         <label for="subcategory_id"
                             class="block text-md font-medium leading-6 mb-2 text-gray-900">Subcategory</label>
                         <select name="subcategory_id" v-model="form.subcategory_id"
                             class="block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                            <option value="">-</option>
-                            <option value="1">1</option>
+                            <option value="" disabled>none</option>
+                            <option v-for="subcategory in currentSubcategories" :value="subcategory.id">{{ subcategory.name }}</option>
                         </select>
                     </div>
 
@@ -66,10 +94,9 @@ const form = useForm({
 
                     <!-- <input type="number" step=".01" v-model="form.amount"> -->
                     <div class="col-span-2">
-                        <label for="note"
-                            class="block text-md font-medium leading-6 mb-2 text-gray-900">Note</label>
+                        <label for="note" class="block text-md font-medium leading-6 mb-2 text-gray-900">Note</label>
                         <input name="note" type="text" v-model="form.note"
-                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
 
                     </div>
                     <InputError :message="form.errors" class="mt-2 col-span-full" />
