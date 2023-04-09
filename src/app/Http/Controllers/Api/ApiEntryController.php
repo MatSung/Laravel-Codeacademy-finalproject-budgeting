@@ -10,7 +10,7 @@ use App\Models\Entry;
 use DateTime;
 use Illuminate\Http\JsonResponse;
 
-class EntryController extends ApiController
+class ApiEntryController extends ApiController
 {
     /**
      * Display a listing of the resource.

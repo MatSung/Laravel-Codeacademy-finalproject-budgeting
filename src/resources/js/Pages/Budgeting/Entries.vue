@@ -3,15 +3,12 @@
 import DefaultLayout from '@/Layouts/DefaultLayout.vue';
 import BudgetEntryAddForm from '@/Components/BudgetEntryAddForm.vue';
 import EntryTable from '@/Components/EntryTable.vue';
-import { useForm, Head } from '@inertiajs/vue3';
-import { toRaw } from 'vue';
+import { useForm, Head, usePage } from '@inertiajs/vue3';
+import { computed } from '@vue/reactivity';
 
 const props = defineProps(['entries','categories']);
 
-const entries = toRaw(props.entries);
-const categories = toRaw(props.categories);
-
-// console.log(categories);
+const entries = computed(() => usePage().props.entries);
 
 </script>
 

@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreEntryCategoryRequest;
 use App\Http\Requests\UpdateEntryCategoryRequest;
-use App\Models\Entry;
 use App\Models\EntryCategory;
-use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Inertia\Response;
 
-class EntryCategoryController extends ApiController
+class EntryCategoryController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -23,9 +23,11 @@ class EntryCategoryController extends ApiController
             $queryBuilder->with('subcategories');;
         }
 
-        $entries = $queryBuilder->get()->toArray();
+        $categories = $queryBuilder->get()->toArray();
 
-        return response()->json($entries);
+        return Inertia::render('Budgeting/Categories',[
+            'categories' => $categories
+        ]);
     }
 
     /**

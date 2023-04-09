@@ -36,9 +36,9 @@ class EntryController extends Controller
 
         $categories = EntryCategory::with('subcategories')->get()->keyBy('id');
 
-        // dd($categories);
+        // dd($entries);
 
-        return Inertia::render('Budgeting/Dashboard',[
+        return Inertia::render('Budgeting/Entries',[
             'entries' => $entries,
             'categories' => $categories
         ]);
@@ -60,7 +60,7 @@ class EntryController extends Controller
         $validated = $request->validated();
         $validated['transaction_date'] = $validated['transaction_date'] ?? now()->toDateTimeString();
         Entry::create($validated);
-        return redirect(route('entries.index'));
+        return redirect(route('dashboard'), 303);
     }
 
     /**
@@ -88,7 +88,7 @@ class EntryController extends Controller
         $validated['transaction_date'] = $validated['transaction_date'] ?? now()->toDateTimeString();
         $validated['subcategory_id'] = $validated['subcategory_id'] ?? null;
         $entry->update($validated);
-        return redirect(route('entries.index'));
+        return redirect(route('dashboard'), 303);
     }
 
     /**
@@ -96,8 +96,7 @@ class EntryController extends Controller
      */
     public function destroy(Entry $entry): RedirectResponse
     {
-        // if exists, delete
         $entry->delete();
-        return redirect(route('entries.index'));
+        return redirect(route('dashboard'), 303);
     }
 }

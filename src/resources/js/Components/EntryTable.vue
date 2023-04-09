@@ -1,10 +1,12 @@
 <script setup>
 import { reactive, ref } from 'vue'
+import { computed } from '@vue/reactivity';
+import { usePage } from '@inertiajs/vue3';
 import BudgetEntry from './BudgetEntry.vue';
 import BudgetUtilityRow from './BudgetUtilityRow.vue';
 
 const props = defineProps(['entries']);
-const entries = props.entries;
+const entries = computed(() => usePage().props.entries);
 
 </script>
 

@@ -2,6 +2,7 @@
 
 use Illuminate\Http\RedirectResponse;
 use App\Http\Controllers\EntryController;
+use App\Http\Controllers\EntryCategoryController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -20,7 +21,9 @@ Route::get('/', function (): RedirectResponse {
     return redirect(route('entries.index'));
 });
 
-Route::resource('/dashboard', EntryController::class,[
+Route::Get('/dashboard', [EntryController::class, 'index'])->name('dashboard');
+
+Route::resource('/entries', EntryController::class, [
     'names' => [
         'index' => 'entries.index',
         'store' => 'entries.store',
@@ -28,4 +31,17 @@ Route::resource('/dashboard', EntryController::class,[
         'destroy' => 'entries.destroy',
         'update' => 'entries.update'
     ]
-])->except(['edit','create']);
+])->except(['save', 'edit']);
+
+Route::resource('/categories', EntryCategoryController::class, [
+    'names' => [
+        'index' => 'categories.index',
+        'store' => 'categories.store',
+        'show' => 'categories.show',
+        'destroy' => 'categories.destroy',
+        'update' => 'categories.update'
+    ]
+])->except(['save', 'edit']);
+    
+// index only
+// /entries for the rest

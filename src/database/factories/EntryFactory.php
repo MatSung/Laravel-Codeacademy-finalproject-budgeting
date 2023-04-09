@@ -18,7 +18,7 @@ class EntryFactory extends Factory
     public function definition(): array
     {
         return [
-            'transaction_date' => fake()->dateTimeBetween('-2 weeks'),
+            'transaction_date' => fake()->dateTimeBetween('-3 weeks')->format('Y-m-d H:i:s'),
             'category_id'=> EntryCategory::factory(),
             'amount' => fake()->randomFloat(2, -100, 100),
             'note' => fake()->word(),

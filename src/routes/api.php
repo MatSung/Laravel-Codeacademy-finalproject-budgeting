@@ -1,8 +1,8 @@
 <?php
 
-use App\Http\Controllers\Api\EntryCategoryController;
-use App\Http\Controllers\Api\EntryController;
-use App\Http\Controllers\Api\EntrySubcategoryController;
+use App\Http\Controllers\Api\ApiEntryCategoryController;
+use App\Http\Controllers\Api\ApiEntryController;
+use App\Http\Controllers\Api\ApiEntrySubcategoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -21,19 +21,27 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::apiResource('/entries', EntryController::class);
-Route::apiResource('/categories', EntryCategoryController::class,[
+Route::apiResource('/entries', ApiEntryController::class,[
     'names' => [
-        'store' => 'apiEntry.store',
-        'index' => 'apiEntry.index',
-        'show' => 'apiEntry.show',
-        'update' => 'apiEntry.update',
-        'destroy' => 'apiEntry.destroy'
+        'store' => 'apiEntries.store',
+        'index' => 'apiEntries.index',
+        'show' => 'apiEntries.show',
+        'update' => 'apiEntries.update',
+        'destroy' => 'apiEntries.destroy'
+    ]
+]);
+Route::apiResource('/categories', ApiEntryCategoryController::class,[
+    'names' => [
+        'store' => 'apiEntryCategories.store',
+        'index' => 'apiEntryCategories.index',
+        'show' => 'apiEntryCategories.show',
+        'update' => 'apiEntryCategories.update',
+        'destroy' => 'apiEntryCategories.destroy'
     ]
 ])->parameters([
     'categories' => 'entry_category'
 ]);
-Route::apiResource('/subcategories', EntrySubcategoryController::class)->parameters([
+Route::apiResource('/subcategories', ApiEntrySubcategoryController::class)->parameters([
     'subcategories' => 'entry_subcategory'
 ]);
 

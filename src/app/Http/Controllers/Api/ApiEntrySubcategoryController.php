@@ -7,7 +7,7 @@ use App\Http\Requests\UpdateEntrySubcategoryRequest;
 use App\Models\EntrySubcategory;
 use Illuminate\Support\Facades;
 
-class EntrySubcategoryController extends ApiController
+class ApiEntrySubcategoryController extends ApiController
 {
     /**
      * Display a listing of the resource.

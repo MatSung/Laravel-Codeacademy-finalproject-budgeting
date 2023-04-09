@@ -25,12 +25,11 @@ const categorySelect = ref(null);
 const hasSubcategories = ref(false);
 const currentSubcategories = ref([]);
 
-// convert received categories to an object of id's
-
 const checkSubcategories = (event) => {
     hasSubcategories.value = false;
     let subcategoriesToPass = categories[event.target.value].subcategories ?? [];
     currentSubcategories.value = subcategoriesToPass;
+    form.subcategory_id = null;
     if (subcategoriesToPass.length) {
         hasSubcategories.value = true;
     }
@@ -44,7 +43,7 @@ onMounted(() => {
 
 <template>
     <div class="container max-w-2xl mx-auto mt-8 border rounded overflow-hidden">
-        <form @submit.prevent="form.post(route('entries.store'), { onSuccess: () => form.reset() })">
+        <form @submit.prevent="form.post(route('entries.store'), { onSuccess: () => form.reset() }, {resetOnSuccess: false})">
             <div class="mx-auto bg-white p-8">
                 <div class="mx-auto grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-4">
 
@@ -58,7 +57,7 @@ onMounted(() => {
                     </div>
                     <div class="col-span-1">
                         <label for="category_id"
-                            class="block text-md font-medium leading-6 mb-2 text-gray-900">Category</label>
+                            class="block text-md font-medium leading-6 mb-2 text-gray-900">Category - <a class="text-blue-400" :href="route('categories.index')">Edit</a></label>
 
                         <select ref="categorySelect" @change="checkSubcategories" name="category_id"
                             v-model="form.category_id"
@@ -69,7 +68,7 @@ onMounted(() => {
                         </select>
                     </div>
                     <!-- reset the subcategory on selection of a different thing -->
-                    <div ref="subcategorySelect" class="col-span-1">
+                    <div v-if="currentSubcategories.length" class="col-span-1">
                         <label for="subcategory_id"
                             class="block text-md font-medium leading-6 mb-2 text-gray-900">Subcategory</label>
                         <select name="subcategory_id" v-model="form.subcategory_id"
@@ -99,7 +98,7 @@ onMounted(() => {
                             class="block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
 
                     </div>
-                    <InputError :message="form.errors" class="mt-2 col-span-full" />
+                    <InputError v-for="error in form.errors" :message="error" class="mt-2 col-span-full" />
                     <PrimaryButton class="col-span-full text-center py-3 px-8 mx-auto">Add</PrimaryButton>
                 </div>
             </div>
