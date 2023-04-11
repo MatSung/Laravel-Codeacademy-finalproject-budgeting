@@ -10,7 +10,7 @@ defineProps({
 <template>
     <button
         :type="type"
-        class="btn-primary"
+        class="btn-danger"
     >
         <slot />
     </button>

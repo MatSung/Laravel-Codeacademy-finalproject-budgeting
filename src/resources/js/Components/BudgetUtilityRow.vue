@@ -12,7 +12,7 @@ const sum = computed(() => {
 });
 
 const symbol = computed(()=>{
-    return sum < 0 ? '-' : (sum == 0) ? '±' : '+';
+    return sum.value < 0 ? '-' : (sum.value == 0) ? '±' : '+';
 });
 
 </script>

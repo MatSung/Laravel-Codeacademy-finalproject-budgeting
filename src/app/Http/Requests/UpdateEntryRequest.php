@@ -34,10 +34,4 @@ class UpdateEntryRequest extends FormRequest
         ];
     }
 
-    protected function prepareForValidation()
-    {
-        $this->merge([
-            'transaction_date' => date("Y-m-d H:i:s", strtotime($this->transaction_date))
-        ]);
-    }
 }

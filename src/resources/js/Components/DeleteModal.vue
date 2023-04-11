@@ -1,5 +1,5 @@
 <script setup>
-import PrimaryButton from '@/Components/PrimaryButton.vue';
+import PrimaryButton from '@/Components/Buttons/PrimaryButton.vue';
 import { Link } from '@inertiajs/vue3';
 
 
@@ -26,7 +26,7 @@ const props = defineProps({
 
         <div class="flex-row gap-x-2 flex">
           <slot name="footer">
-            <Link :href="target" as="button" class="btn-danger" method="delete">Delete</Link>
+            <Link :href="target" @click="$emit('close')" as="button" class="btn-danger" method="delete">Delete</Link>
             <PrimaryButton @click="$emit('close')">Cancel</PrimaryButton>
             
           </slot>
@@ -37,20 +37,6 @@ const props = defineProps({
 </template>
 
 <style>
-
-.modal-container {
-  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33); */
-  transition: all 0.3s ease;
-}
-
-.modal-header h3 {
-  margin-top: 0;
-}
-
-.modal-body {
-  margin: 20px 0;
-}
-
 
 /*
  * The following styles are auto-applied to elements with

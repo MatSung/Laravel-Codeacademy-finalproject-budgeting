@@ -2,12 +2,11 @@
 
 import { useForm } from '@inertiajs/vue3';
 import InputError from '@/Components/InputError.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import { ref, reactive, onMounted } from 'vue';
+import PrimaryButton from '@/Components/Buttons/PrimaryButton.vue';
+import { ref, onMounted } from 'vue';
 
-const props = defineProps(['entries', 'categories']);
+const props = defineProps(['categories']);
 
-const entries = props.entries;
 const categories = props.categories;
 
 const form = useForm({
@@ -52,7 +51,7 @@ onMounted(() => {
                             class="block text-md font-medium leading-6 mb-2 text-gray-900">Transaction
                             Date</label>
                         <input name="transaction_date" type="datetime-local" v-model="form.transaction_date"
-                            max="2100-01-01T00:00" min="2000-01-01T00:00"
+                            max="2100-01-01T00:00" min="2000-01-01T00:00" step="1"
                             class="block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                     </div>
                     <div class="col-span-1">
@@ -91,7 +90,6 @@ onMounted(() => {
                         </div>
                     </div>
 
-                    <!-- <input type="number" step=".01" v-model="form.amount"> -->
                     <div class="col-span-2">
                         <label for="note" class="block text-md font-medium leading-6 mb-2 text-gray-900">Note</label>
                         <input name="note" type="text" v-model="form.note"
@@ -99,7 +97,9 @@ onMounted(() => {
 
                     </div>
                     <InputError v-for="error in form.errors" :message="error" class="mt-2 col-span-full" />
-                    <PrimaryButton class="col-span-full text-center py-3 px-8 mx-auto">Add</PrimaryButton>
+                    <slot>
+                        <PrimaryButton :disabled="form.processing" class="col-span-full text-center py-3 px-8 mx-auto">Add</PrimaryButton>
+                    </slot>
                 </div>
             </div>
 

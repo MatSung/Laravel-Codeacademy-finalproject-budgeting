@@ -24,7 +24,7 @@ class StoreEntryRequest extends FormRequest
     {
         return [
             'amount' => 'required|numeric|between:-99999999,99999999',
-            'transaction_date' => 'nullable|date_format:Y-m-d H:i:s',
+            'transaction_date' => 'nullable|date',
             //https://laravel.com/docs/10.x/validation#rule-exists
             'category_id' => 'required|exists:App\Models\EntryCategory,id',
             // if category has subcategories, force it to choose a subcategory?
@@ -48,12 +48,4 @@ class StoreEntryRequest extends FormRequest
         ];
     }
 
-
-
-    protected function prepareForValidation()
-    {
-        $this->merge([
-            'transaction_date' => date("Y-m-d H:i:s", strtotime($this->transaction_date))
-        ]);
-    }
 }

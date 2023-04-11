@@ -46,7 +46,10 @@ class ApiEntryController extends ApiController
     public function store(StoreEntryRequest $request): JsonResponse
     {
         $validated = $request->validated();
+
         $validated['transaction_date'] = $validated['transaction_date'] ?? now()->toDateTimeString();
+        $validated['transaction_date'] = date("Y-m-d H:i:s", strtotime($validated['transaction_date']));
+
         return response()->json(Entry::create($validated), 201);
     }
 
@@ -72,8 +75,12 @@ class ApiEntryController extends ApiController
     public function update(UpdateEntryRequest $request, Entry $entry): JsonResponse
     {
         $validated = $request->validated();
+
         $validated['transaction_date'] = $validated['transaction_date'] ?? now()->toDateTimeString();
+        $validated['transaction_date'] = date("Y-m-d H:i:s", strtotime($validated['transaction_date']));
+
         $validated['subcategory_id'] = $validated['subcategory_id'] ?? null;
+        
         return response()->json($entry->update($validated), 200);
     }
 

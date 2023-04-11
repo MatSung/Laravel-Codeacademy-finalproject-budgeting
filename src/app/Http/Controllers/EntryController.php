@@ -58,7 +58,10 @@ class EntryController extends Controller
     public function store(StoreEntryRequest $request): RedirectResponse
     {
         $validated = $request->validated();
+
         $validated['transaction_date'] = $validated['transaction_date'] ?? now()->toDateTimeString();
+        $validated['transaction_date'] = date("Y-m-d H:i:s", strtotime($validated['transaction_date']));
+
         Entry::create($validated);
         return redirect(route('dashboard'), 303);
     }
@@ -85,7 +88,10 @@ class EntryController extends Controller
     public function update(UpdateEntryRequest $request, Entry $entry): RedirectResponse
     {
         $validated = $request->validated();
+
         $validated['transaction_date'] = $validated['transaction_date'] ?? now()->toDateTimeString();
+        $validated['transaction_date'] = date("Y-m-d H:i:s", strtotime($validated['transaction_date']));
+        
         $validated['subcategory_id'] = $validated['subcategory_id'] ?? null;
         $entry->update($validated);
         return redirect(route('dashboard'), 303);
