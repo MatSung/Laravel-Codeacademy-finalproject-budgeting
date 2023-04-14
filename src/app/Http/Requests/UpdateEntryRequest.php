@@ -24,7 +24,7 @@ class UpdateEntryRequest extends FormRequest
     {
         return [
             'amount' => 'numeric|between:-99999999,99999999',
-            'transaction_date' => 'date_format:Y-m-d H:i:s',
+            'transaction_date' => 'date',
             'category_id' => 'exists:App\Models\EntryCategory,id',
             'subcategory_id' => [
                 'nullable',

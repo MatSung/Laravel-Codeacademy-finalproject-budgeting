@@ -79,12 +79,10 @@ const checkSubcategories = (event = null) => {
               </div>
               <div class="col-span-1">
                 <label for="category_id" class="block text-md font-medium leading-6 mb-2 text-gray-900">Category</label>
-
                 <select ref="categorySelect" @change="checkSubcategories" name="category_id" v-model="form.category_id"
                   class="block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                   <option value="0" selected disabled>Please select a category</option>
                   <option v-for="category in categories" :value="category.id">{{ category.name }}</option>
-
                 </select>
               </div>
               <!-- reset the subcategory on selection of a different thing -->

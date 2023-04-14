@@ -15,16 +15,9 @@ class EntryCategoryController extends Controller
      */
     public function index()
     {
-        $listSubcategories = request('subcategories') ?? false;
-
         $queryBuilder = EntryCategory::query();
-
-        if ($listSubcategories) {
-            $queryBuilder->with('subcategories');;
-        }
-
+        $queryBuilder->with('subcategories');;
         $categories = $queryBuilder->get()->toArray();
-
         return Inertia::render('Budgeting/Categories',[
             'categories' => $categories
         ]);

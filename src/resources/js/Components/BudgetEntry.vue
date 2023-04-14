@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, computed, ref, defineEmits } from 'vue'
+import { reactive, computed, ref, defineEmits } from 'vue';
 
 const props = defineProps(['entry']);
 
