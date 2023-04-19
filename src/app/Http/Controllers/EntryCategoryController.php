@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreEntryCategoryRequest;
 use App\Http\Requests\UpdateEntryCategoryRequest;
 use App\Models\EntryCategory;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -16,8 +18,10 @@ class EntryCategoryController extends Controller
     public function index()
     {
         $queryBuilder = EntryCategory::query();
-        $queryBuilder->with('subcategories');;
+        $queryBuilder->withCount('entries');
+        $queryBuilder->with('subcategories');
         $categories = $queryBuilder->get()->toArray();
+        // dd($categories);
         return Inertia::render('Budgeting/Categories',[
             'categories' => $categories
         ]);
@@ -37,7 +41,8 @@ class EntryCategoryController extends Controller
     public function store(StoreEntryCategoryRequest $request)
     {
         $validated = $request->validated();
-        return response()->json(EntryCategory::create($validated), 201);
+        EntryCategory::create($validated);
+        return back(303);
     }
 
     /**
@@ -45,13 +50,7 @@ class EntryCategoryController extends Controller
      */
     public function show(EntryCategory $entryCategory)
     {
-        $listSubcategories = request('subcategories') ?? false;
-
-        if ($listSubcategories) {
-            $entryCategory->load('subcategories');;
-        }
-
-        return response()->json($entryCategory);
+        //
     }
 
     /**
@@ -65,18 +64,24 @@ class EntryCategoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateEntryCategoryRequest $request, EntryCategory $entryCategory)
+    public function update(UpdateEntryCategoryRequest $request, EntryCategory $category)
     {
         $validated = $request->validated();
-        return response()->json($entryCategory->update($validated), 200);
+        $category->update($validated);
+        return back(303);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(EntryCategory $entryCategory)
+    public function destroy(EntryCategory $category): RedirectResponse
     {
-        $entryCategory->delete();
-        return response();
+        // delete every entry?
+        // 
+        throw_if($category->loadCount('entries')->entries_count > 0, ValidationException::withMessages(
+            ['category' => ['Category still has entries']]
+        ));
+        $category->delete();
+        return back(303);
     }
 }

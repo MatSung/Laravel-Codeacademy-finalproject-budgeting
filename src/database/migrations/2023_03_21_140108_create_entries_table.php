@@ -16,7 +16,7 @@ return new class extends Migration
             $table->dateTime('transaction_date');
             $table->foreignId('category_id')->constrained('entry_categories')->restrictOnDelete();
             $table->foreignId('subcategory_id')->nullable()
-                ->constrained('entry_subcategories')->restrictOnDelete(); 
+                ->constrained('entry_subcategories')->nullOnDelete(); 
             $table->float('amount', 10, 2);
             $table->string('note', 255)->nullable();
             $table->timestamps();

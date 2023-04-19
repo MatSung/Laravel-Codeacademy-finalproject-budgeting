@@ -31,7 +31,8 @@ class UpdateEntrySubcategoryRequest extends FormRequest
                     ->where(
                         'parent_id',
                         request('parent_id') ?? $this->route('entry_subcategory')->id
-                    )
+                    ),
+                // 'regex:/^[\w-()]*$/'
             ],
             'parent_id' => [
                 'required_without:name',
@@ -55,7 +56,8 @@ class UpdateEntrySubcategoryRequest extends FormRequest
             'name.max' => 'Name must not be longer than 20 symbols',
             'parent_id.required' => 'Parent_id is required',
             'parent_id.exists' => 'Provided parent category does not exist',
-            'parent_id.unique' => 'A subcategory with the same name for the provided parent_id already exists'
+            'parent_id.unique' => 'A subcategory with the same name for the provided parent_id already exists',
+            // 'name.regex' => 'Name may only contain alphanumerics or brackets ()',
         ];
     }
 }

@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Requests\StoreEntryCategoryRequest;
 use App\Http\Requests\UpdateEntryCategoryRequest;
 use App\Models\EntryCategory;
+use Illuminate\Http\Client\RequestException;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Validator;
 
 class ApiEntryCategoryController extends ApiController
 {
@@ -79,7 +82,10 @@ class ApiEntryCategoryController extends ApiController
      */
     public function destroy(EntryCategory $entryCategory)
     {
+        throw_if($entryCategory->loadCount('entries')->entries_count > 0, ValidationException::withMessages(
+            ['category' => ['Category still has entries']]
+        ));
         $entryCategory->delete();
-        return response();
+        return response('',200);
     }
 }

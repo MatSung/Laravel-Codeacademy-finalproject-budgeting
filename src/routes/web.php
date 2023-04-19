@@ -3,6 +3,7 @@
 use Illuminate\Http\RedirectResponse;
 use App\Http\Controllers\EntryController;
 use App\Http\Controllers\EntryCategoryController;
+use App\Http\Controllers\EntrySubcategoryController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -42,6 +43,14 @@ Route::resource('/categories', EntryCategoryController::class, [
         'update' => 'categories.update'
     ]
 ])->except(['save', 'edit']);
+
+Route::resource('/subcategories', EntrySubcategoryController::class, [
+    'names' => [
+        'index' => 'subcategories.index',
+        'store' => 'subcategories.store',
+        'show' => 'subcategories.show',
+        'destroy' => 'subcategories.destroy',
+        'update' => 'subcategories.update'
+    ]
+])->except(['save', 'edit']);
     
-// index only
-// /entries for the rest

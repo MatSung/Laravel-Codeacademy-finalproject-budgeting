@@ -22,7 +22,13 @@ class UpdateEntryCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|unique:App\Models\EntryCategory,name|max:20'
+            'name' => [
+                'required',
+                'string',
+                'unique:App\Models\EntryCategory,name',
+                'max:20',
+                // 'regex:/^[\w-()]*$/'
+            ]
         ];
     }
 
@@ -32,7 +38,8 @@ class UpdateEntryCategoryRequest extends FormRequest
             'name.required' => 'A name is required',
             'name.unique' => 'Category already exists',
             'name.string' => 'Name must be a string',
-            'name.max' => 'Name must not be longer than 20 symbols'
+            'name.max' => 'Name must not be longer than 20 symbols',
+            // 'name.regex' => 'Name may only contain alphanumerics or brackets ()',
         ];
     }
 }

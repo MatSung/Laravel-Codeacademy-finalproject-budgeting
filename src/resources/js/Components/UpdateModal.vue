@@ -10,13 +10,11 @@ const props = defineProps({
   target: String,
   categories: Object,
   entry: Object
-})
+});
 
 const categories = props.categories;
-
-
 const entry = props.entry;
-// update form values
+
 let form = useForm({
   transaction_date: '',
   category_id: 1,
@@ -27,7 +25,6 @@ let form = useForm({
 
 watch(entry, () => {
   if (entry) {
-
     checkSubcategories({ target: { value: entry.value.category ? entry.value.category.id : null } });
     form = useForm({
       transaction_date: entry.value.transaction_date,
@@ -65,7 +62,7 @@ const checkSubcategories = (event = null) => {
           <slot name="header">Update entry</slot>
         </div>
         <form
-          @submit.prevent="form.patch(target, { onSuccess: () => { form.reset(); $emit('close') }, preserveScroll: true }, { resetOnSuccess: false })">
+          @submit.prevent="form.patch(target, { onSuccess: () => { form.reset(); $emit('close'); }, preserveScroll: true }, { resetOnSuccess: false })">
 
           <div class="mx-auto bg-white py-8">
             <div class="mx-auto grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-4">

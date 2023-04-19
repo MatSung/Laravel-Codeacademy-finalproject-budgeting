@@ -22,11 +22,12 @@ class EntryCategory extends Model
 
     public function entries()
     {
-        return $this->hasMany(Entry::class);
+        return $this->hasMany(Entry::class, 'category_id', 'id');
     }
 
     public function subcategories()
     {
         return $this->hasMany(EntrySubcategory::class, 'parent_id', 'id');
     }
+
 }

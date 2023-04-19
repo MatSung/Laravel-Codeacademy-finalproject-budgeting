@@ -11,6 +11,12 @@ const props = defineProps(['entries', 'categories']);
 const entries = computed(() => usePage().props.entries);
 const categories = props.categories;
 
+
+// Delete modal
+const deletionState = reactive({
+    show: false,
+    target: '#'
+});
 const showDeleteModal = ref(false);
 const deleteModalTarget = ref('#');
 
@@ -19,6 +25,7 @@ const activateDeleteModal = (id) => {
     showDeleteModal.value = true;
 }
 
+// Update modal
 const showUpdateModal = ref(false);
 const updateModalTarget = ref('#');
 const updateModalPrefill = reactive({});

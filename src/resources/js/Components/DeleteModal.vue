@@ -1,14 +1,23 @@
 <script setup>
 import PrimaryButton from '@/Components/Buttons/PrimaryButton.vue';
 import { Link } from '@inertiajs/vue3';
+import { computed } from '@vue/reactivity';
 
 
 
 const props = defineProps({
   show: Boolean,
   message: String,
-  target: String
+  target: String,
+  isBlocked: {
+    type: Boolean,
+    default: false
+  }
 })
+
+const blockedClass = computed(()=>{
+  return props.isBlocked ? 'btn-disabled' : 'btn-danger';
+});
 
 </script>
 
@@ -19,16 +28,13 @@ const props = defineProps({
         <div class="text-red-600 font-bold text-lg mt-0">
           <slot name="header">Are you sure?</slot>
         </div>
-
         <div class="my-5 mx-0">
           <slot name="body"></slot>
         </div>
-
         <div class="flex-row gap-x-2 flex">
           <slot name="footer">
-            <Link :href="target" @click="$emit('close')" as="button" class="btn-danger" method="delete">Delete</Link>
+            <Link :href="target" :disabled="isBlocked" @click="$emit('close')" as="button" :class="blockedClass" method="delete">Delete</Link>
             <PrimaryButton @click="$emit('close')">Cancel</PrimaryButton>
-            
           </slot>
         </div>
       </div>
