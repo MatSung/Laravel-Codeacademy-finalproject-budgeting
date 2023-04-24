@@ -1,5 +1,6 @@
 <script setup>
 import DeleteModal from '@/Components/DeleteModal.vue';
+import CategoryUpdateModal from '@/Components/CategoryUpdateModal.vue';
 import BudgetCategoryEntry from '@/Components/BudgetCategoryEntry.vue';
 import CategoryAdd from '@/Components/CategoryAdd.vue';
 import { usePage } from '@inertiajs/vue3';
@@ -20,7 +21,9 @@ const msgs = {
     'subcategory-delete-msg': 'Are you sure you want to delete this subcategory? This will remove it from any associated entries.',
     'category-delete-msg': 'Are you sure you want to delete this category?',
     'cannot-delete-category': 'Unable to delete category due to existing entries.',
-    'also-delete-subcategories': 'This category still has subcategories which will be deleted as well!'
+    'also-delete-subcategories': 'This category still has subcategories which will be deleted as well!',
+    'categories': 'category',
+    'subcategories': 'subcategory'
 };
 
 const msg = ref(msgs['category-delete-msg']);
@@ -46,6 +49,20 @@ const activateDeleteModal = (item, isSubcategory = false) => {
     deletionState.show = true;
 }
 
+const updateState = reactive({
+    show: false,
+    target: '#',
+    prefill: '',
+    type: 'categories',
+});
+
+const activateUpdateModal = (item, isSubcategory = false) => {
+    updateState.type = isSubcategory ? 'subcategories' : 'categories';
+    updateState.prefill = item.name;
+    updateState.target = route(updateState.type + '.update', item.id);
+    updateState.show = true
+}
+
 </script>
 
 <template>
@@ -53,7 +70,7 @@ const activateDeleteModal = (item, isSubcategory = false) => {
         <div class="w-full bg-gray-200 flex flex-col gap-0">
             <CategoryAdd />
             <BudgetCategoryEntry v-for="category in categories" :key="category.id" :category="category" :subcategories="category.subcategories"
-                @show-delete-modal="activateDeleteModal" />
+                @show-delete-modal="activateDeleteModal" @show-update-modal="activateUpdateModal"/>
         </div>
         <Teleport to="body">
             <DeleteModal :show="deletionState.show" :is-blocked="deletionState.blocked" :target="deletionState.target"
@@ -65,6 +82,11 @@ const activateDeleteModal = (item, isSubcategory = false) => {
                     <p>{{ msg }}</p>
                 </template>
             </DeleteModal>
+            <CategoryUpdateModal v-bind="updateState" @close="updateState.show = false">
+                <template #header>
+                    Update {{ msgs[updateState.type] }}.
+                </template>
+            </CategoryUpdateModal>
         </Teleport>
     </div>
 </template>

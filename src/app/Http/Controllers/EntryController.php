@@ -36,8 +36,6 @@ class EntryController extends Controller
 
         $categories = EntryCategory::with('subcategories')->get()->keyBy('id');
 
-        // dd($entries);
-
         return Inertia::render('Budgeting/Entries',[
             'entries' => $entries,
             'categories' => $categories

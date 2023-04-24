@@ -26,7 +26,7 @@ const currentSubcategories = ref([]);
 
 const checkSubcategories = (event) => {
     hasSubcategories.value = false;
-    let subcategoriesToPass = categories[event.target.value].subcategories ?? [];
+    let subcategoriesToPass = categories[categorySelect.value.value].subcategories ?? [];
     currentSubcategories.value = subcategoriesToPass;
     form.subcategory_id = null;
     if (subcategoriesToPass.length) {
@@ -34,15 +34,16 @@ const checkSubcategories = (event) => {
     }
 };
 
+
 onMounted(() => {
-    categorySelect.value.value = 0;
+    checkSubcategories({ target: { value: 1 } });
 });
 
 </script>
 
 <template>
     <div class="container max-w-2xl mx-auto mt-8 border rounded overflow-hidden">
-        <form @submit.prevent="form.post(route('entries.store'), { onSuccess: () => form.reset() }, {resetOnSuccess: false})">
+        <form @submit.prevent="form.post(route('entries.store'), { onSuccess: () => {form.reset(); currentSubcategories = [];} }, {resetOnSuccess: false})">
             <div class="mx-auto bg-white p-8">
                 <div class="mx-auto grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-4">
 

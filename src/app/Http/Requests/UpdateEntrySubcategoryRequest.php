@@ -30,7 +30,7 @@ class UpdateEntrySubcategoryRequest extends FormRequest
                 Rule::unique('entry_subcategories')
                     ->where(
                         'parent_id',
-                        request('parent_id') ?? $this->route('entry_subcategory')->id
+                        request('parent_id') ?? $this->route('subcategory')->id
                     ),
                 // 'regex:/^[\w-()]*$/'
             ],
@@ -41,7 +41,7 @@ class UpdateEntrySubcategoryRequest extends FormRequest
                 Rule::unique('entry_subcategories')
                     ->where(
                         'name',
-                        request('name') ?? $this->route('entry_subcategory')->name
+                        request('name') ?? $this->route('subcategory')->name
                     )
             ]
         ];

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use Illuminate\Http\RedirectResponse;
 use App\Http\Controllers\EntryController;
 use App\Http\Controllers\EntryCategoryController;
@@ -22,7 +23,7 @@ Route::get('/', function (): RedirectResponse {
     return redirect(route('entries.index'));
 });
 
-Route::Get('/dashboard', [EntryController::class, 'index'])->name('dashboard');
+Route::Get('/dashboard', DashboardController::class)->name('dashboard');
 
 Route::resource('/entries', EntryController::class, [
     'names' => [
@@ -53,4 +54,7 @@ Route::resource('/subcategories', EntrySubcategoryController::class, [
         'update' => 'subcategories.update'
     ]
 ])->except(['save', 'edit']);
-    
+
+Route::get('/about', function () {
+    return Inertia::render('Budgeting/About');
+});

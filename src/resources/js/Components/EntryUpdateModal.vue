@@ -1,5 +1,5 @@
 <script setup>
-import { Link, useForm, usePage } from '@inertiajs/vue3';
+import { useForm } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
 import InputError from '@/Components/InputError.vue';
 import PrimaryButton from '@/Components/Buttons/PrimaryButton.vue';
@@ -9,7 +9,10 @@ const props = defineProps({
   show: Boolean,
   target: String,
   categories: Object,
-  entry: Object
+  entry: {
+    type: Object,
+    default: {}
+  }
 });
 
 const categories = props.categories;
@@ -24,7 +27,16 @@ let form = useForm({
 });
 
 watch(entry, () => {
-  if (entry) {
+  if (!Object.keys(entry.value).length) {
+    form = useForm({
+      transaction_date: '',
+      category_id: 1,
+      subcategory_id: null,
+      amount: 0,
+      note: ''
+    });
+    checkSubcategories({ target: { value: 1 } });
+  } else {
     checkSubcategories({ target: { value: entry.value.category ? entry.value.category.id : null } });
     form = useForm({
       transaction_date: entry.value.transaction_date,
@@ -35,8 +47,6 @@ watch(entry, () => {
     });
   }
 });
-
-const categorySelect = ref(null);
 
 const hasSubcategories = ref(false);
 const currentSubcategories = ref([]);
@@ -51,12 +61,14 @@ const checkSubcategories = (event = null) => {
   }
 };
 
+
+
 </script>
 
 <template>
   <Transition name="modal">
     <div v-if="show" class="fixed z-50 top-0 left-0 w-full h-full bg-black bg-opacity-50 flex transition-opacity"
-      @click="$emit('close')">
+      @click="(event) => { if (!form.processing) $emit('close') }">
       <div @click.stop class="px-8 py-5 m-auto rounded-lg max-w-xl bg-white transition-all duration-300 ease-out">
         <div class="text-black font-bold text-lg mt-0">
           <slot name="header">Update entry</slot>
@@ -75,7 +87,7 @@ const checkSubcategories = (event = null) => {
                   class="block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
               </div>
               <div class="col-span-1">
-                <label for="category_id" class="block text-md font-medium leading-6 mb-2 text-gray-900">Category</label>
+                <label for="category_id" class="block text-md font-medium leading-6 mb-2 text-gray-900">Category - <a class="text-blue-400" :href="route('categories.index')">Edit</a></label>
                 <select ref="categorySelect" @change="checkSubcategories" name="category_id" v-model="form.category_id"
                   class="block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                   <option value="0" selected disabled>Please select a category</option>
@@ -117,7 +129,7 @@ const checkSubcategories = (event = null) => {
           </div>
 
           <div class="flex-row gap-x-2 flex">
-            <PrimaryButton :disabled="form.processing">Update</PrimaryButton>
+            <PrimaryButton :disabled="form.processing"><slot name="button">Update</slot></PrimaryButton>
             <PrimaryButton :type="'button'" :disabled="form.processing" @click="$emit('close')">Cancel</PrimaryButton>
           </div>
 
@@ -126,28 +138,3 @@ const checkSubcategories = (event = null) => {
     </div>
   </Transition>
 </template>
-
-<style>
-/*
- * The following styles are auto-applied to elements with
- * transition="modal" when their visibility is toggled
- * by Vue.js.
- *
- * You can easily play with the modal transition by editing
- * these styles.
- */
-
-.modal-enter-from {
-  opacity: 0;
-}
-
-.modal-leave-to {
-  opacity: 0;
-}
-
-.modal-enter-from .modal-container,
-.modal-leave-to .modal-container {
-  -webkit-transform: scale(1.1);
-  transform: scale(1.1);
-}
-</style>

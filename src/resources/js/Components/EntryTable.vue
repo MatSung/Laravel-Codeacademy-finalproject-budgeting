@@ -5,7 +5,7 @@ import { usePage, Link } from '@inertiajs/vue3';
 import BudgetEntry from './BudgetEntry.vue';
 import BudgetUtilityRow from '@/Components/BudgetUtilityRow.vue';
 import DeleteModal from '@/Components/DeleteModal.vue';
-import UpdateModal from '@/Components/UpdateModal.vue';
+import UpdateModal from '@/Components/EntryUpdateModal.vue';
 
 const props = defineProps(['entries', 'categories']);
 const entries = computed(() => usePage().props.entries);
@@ -17,26 +17,33 @@ const deletionState = reactive({
     show: false,
     target: '#'
 });
-const showDeleteModal = ref(false);
-const deleteModalTarget = ref('#');
 
 const activateDeleteModal = (id) => {
-    deleteModalTarget.value = route('entries.destroy', id);
-    showDeleteModal.value = true;
+    deletionState.target = route('entries.destroy', id);
+    deletionState.show = true;
 }
 
 // Update modal
-const showUpdateModal = ref(false);
-const updateModalTarget = ref('#');
-const updateModalPrefill = reactive({});
+const updateState = reactive({
+    show: false,
+    target: '#',
+    prefill: reactive({}),
+    type: 'Update'
+})
 
 const activateUpdateModal = (entry) => {
-    updateModalTarget.value = route('entries.update', entry.id);
-    showUpdateModal.value = true;
-    updateModalPrefill.value = entry;
-
+    updateState.type = 'Update'
+    updateState.target = route('entries.update', entry.id);
+    updateState.show = true;
+    updateState.prefill.value = entry;
 }
 
+const activateCreateModal = () => {
+    updateState.type = 'Create';
+    updateState.target = route('entries.store');
+    updateState.show = true;
+    updateState.prefill.value = {};
+}
 
 </script>
 
@@ -55,12 +62,12 @@ const activateUpdateModal = (entry) => {
                 </tr>
             </thead>
             <tbody>
-                <BudgetUtilityRow :entries="entries" />
+                <BudgetUtilityRow :entries="entries" @show-create-modal="activateCreateModal" />
                 <BudgetEntry v-for="entry in entries" :key="entry.id" :entry="entry"
                     @show-delete-modal="activateDeleteModal" @show-update-modal="activateUpdateModal" />
             </tbody>
             <Teleport to="body">
-                <DeleteModal :show="showDeleteModal" :target="deleteModalTarget" @close="showDeleteModal = false">
+                <DeleteModal :show="deletionState.show" :target="deletionState.target" @close="deletionState.show = false">
                     <template #header>
                         <h3>Delete?</h3>
                     </template>
@@ -68,10 +75,13 @@ const activateUpdateModal = (entry) => {
                         <p>Are you sure you want to delete this entry?</p>
                     </template>
                 </DeleteModal>
-                <UpdateModal :categories="categories" :entry="updateModalPrefill" :show="showUpdateModal"
-                    :target="updateModalTarget" @close="showUpdateModal = false">
+                <UpdateModal :categories="categories" :entry="updateState.prefill" :show="updateState.show"
+                    :target="updateState.target" @close="updateState.show = false">
                     <template #header>
-                        Update
+                        {{updateState.type}}
+                    </template>
+                    <template #button>
+                        {{ updateState.type }}
                     </template>
                 </UpdateModal>
             </Teleport>

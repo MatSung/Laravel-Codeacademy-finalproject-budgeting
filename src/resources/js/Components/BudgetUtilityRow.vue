@@ -26,9 +26,9 @@ const symbol = computed(()=>{
         <td class="pt-2">{{ symbol + Math.abs(sum) }}</td>
         <td class="pt-2"></td>
         <td class="">
-            <!-- <div class="flex gap-4 justify-end pr-4">
-                <a href="#" class="w-4 inline-block">➕</a>
-            </div> -->
+            <div class="flex gap-4 justify-end pr-4">
+                <a href="#" class="w-4 inline-block" @click="$emit('show-create-modal')">➕</a>
+            </div>
         </td>
     </tr>
 </template>

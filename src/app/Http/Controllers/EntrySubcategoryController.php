@@ -59,7 +59,7 @@ class EntrySubcategoryController extends Controller
      */
     public function update(UpdateEntrySubcategoryRequest $request, EntrySubcategory $subcategory)
     {
-
+        
         $validated = $request->validated();
         $subcategory->update($validated);
         return back(303);

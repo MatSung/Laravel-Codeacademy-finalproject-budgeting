@@ -38,10 +38,6 @@ Route::apiResource('/categories', ApiEntryCategoryController::class,[
         'update' => 'apiEntryCategories.update',
         'destroy' => 'apiEntryCategories.destroy'
     ]
-])->parameters([
-    'categories' => 'entry_category'
 ]);
-Route::apiResource('/subcategories', ApiEntrySubcategoryController::class)->parameters([
-    'subcategories' => 'entry_subcategory'
-]);
+Route::apiResource('/subcategories', ApiEntrySubcategoryController::class);
 

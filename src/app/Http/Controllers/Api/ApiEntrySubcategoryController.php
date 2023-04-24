@@ -47,21 +47,21 @@ class ApiEntrySubcategoryController extends ApiController
     /**
      * Display the specified resource.
      */
-    public function show(EntrySubcategory $entrySubcategory)
+    public function show(EntrySubcategory $subcategory)
     {
         $showParent = request('showParent') ?? false;
 
         if ($showParent) {
-            $entrySubcategory->load('category');
+            $subcategory->load('category');
         }
 
-        return response()->json($entrySubcategory);
+        return response()->json($subcategory);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(EntrySubcategory $entrySubcategory)
+    public function edit(EntrySubcategory $subcategory)
     {
         //
     }
@@ -69,19 +69,18 @@ class ApiEntrySubcategoryController extends ApiController
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateEntrySubcategoryRequest $request, EntrySubcategory $entrySubcategory)
+    public function update(UpdateEntrySubcategoryRequest $request, EntrySubcategory $subcategory)
     {
-
         $validated = $request->validated();
-        return response()->json($entrySubcategory->update($validated), 200);
+        return response()->json($subcategory->update($validated), 200);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(EntrySubcategory $entrySubcategory)
+    public function destroy(EntrySubcategory $subcategory)
     {
-        $entrySubcategory->delete();
+        $subcategory->delete();
         return response();
     }
 }

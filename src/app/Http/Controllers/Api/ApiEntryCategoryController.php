@@ -49,15 +49,15 @@ class ApiEntryCategoryController extends ApiController
     /**
      * Display the specified resource.
      */
-    public function show(EntryCategory $entryCategory)
+    public function show(EntryCategory $category)
     {
         $listSubcategories = request('subcategories') ?? false;
 
         if ($listSubcategories) {
-            $entryCategory->load('subcategories');;
+            $category->load('subcategories');;
         }
 
-        return response()->json($entryCategory);
+        return response()->json($category);
     }
 
     /**
@@ -71,21 +71,21 @@ class ApiEntryCategoryController extends ApiController
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateEntryCategoryRequest $request, EntryCategory $entryCategory)
+    public function update(UpdateEntryCategoryRequest $request, EntryCategory $category)
     {
         $validated = $request->validated();
-        return response()->json($entryCategory->update($validated), 200);
+        return response()->json($category->update($validated), 200);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(EntryCategory $entryCategory)
+    public function destroy(EntryCategory $category)
     {
-        throw_if($entryCategory->loadCount('entries')->entries_count > 0, ValidationException::withMessages(
+        throw_if($category->loadCount('entries')->entries_count > 0, ValidationException::withMessages(
             ['category' => ['Category still has entries']]
         ));
-        $entryCategory->delete();
+        $category->delete();
         return response('',200);
     }
 }
