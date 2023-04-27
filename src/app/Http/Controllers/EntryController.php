@@ -6,9 +6,9 @@ use App\Http\Requests\StoreEntryRequest;
 use App\Http\Requests\UpdateEntryRequest;
 use App\Models\Entry;
 use App\Models\EntryCategory;
-use DateTime;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Redirect;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Request as FacadeRequest;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -17,18 +17,21 @@ class EntryController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
         // add some variables to filter by date, amount, category and so on
         // sorting
         // pages
         // by category?
-        $sort = request('sort') ?? true;
-
+        
+        $sort = request('sort') === 'asc' ? 'asc' : 'desc';
+        
         $queryBuilder = Entry::query();
 
-        if ($sort){
+        if ($sort === 'desc'){
             $queryBuilder->latest('transaction_date');
+        } else {
+            $queryBuilder->oldest('transaction_date');
         }
 
         $entries = $queryBuilder->get()->toArray();
@@ -38,7 +41,8 @@ class EntryController extends Controller
 
         return Inertia::render('Budgeting/Entries',[
             'entries' => $entries,
-            'categories' => $categories
+            'categories' => $categories,
+            'filters' => FacadeRequest::all('order', 'order_by', 'group_by', 'income', 'category', 'subcategory')
         ]);
     }
 
@@ -61,7 +65,7 @@ class EntryController extends Controller
         $validated['transaction_date'] = date("Y-m-d H:i:s", strtotime($validated['transaction_date']));
 
         Entry::create($validated);
-        return redirect(route('dashboard'), 303);
+        return back(303);
     }
 
     /**
@@ -92,7 +96,7 @@ class EntryController extends Controller
         
         $validated['subcategory_id'] = $validated['subcategory_id'] ?? null;
         $entry->update($validated);
-        return redirect(route('dashboard'), 303);
+        return back(303);
     }
 
     /**
@@ -101,6 +105,6 @@ class EntryController extends Controller
     public function destroy(Entry $entry): RedirectResponse
     {
         $entry->delete();
-        return redirect(route('dashboard'), 303);
+        return back(303);
     }
 }

@@ -48,7 +48,7 @@ const form = useForm({
                         </button>
                         <input type="text" v-model="form.name" class="rounded-lg pl-10 py-1 " required maxlength="20"
                             placeholder="New Subcategory">
-                        <button @click="adding = false"
+                        <button @click="form.cancel(); adding = false; "
                             class="absolute inset-y-0 right-0 rounded-lg bg-white border-gray-500 border w-8">
                             ✖
                         </button>

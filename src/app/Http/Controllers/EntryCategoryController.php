@@ -76,8 +76,9 @@ class EntryCategoryController extends Controller
      */
     public function destroy(EntryCategory $category): RedirectResponse
     {
-        // delete every entry?
-        // 
+        throw_if(EntryCategory::count() === 1, ValidationException::withMessages((
+            ['category' => ['You cannot delete the final category']]
+        )));
         throw_if($category->loadCount('entries')->entries_count > 0, ValidationException::withMessages(
             ['category' => ['Category still has entries']]
         ));

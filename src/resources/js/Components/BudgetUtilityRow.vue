@@ -3,10 +3,10 @@
 import { reactive, computed } from 'vue'
 
 const props = defineProps(['entries']);
-const entries = props.entries;
+// const entries = props.entries;
 
 const sum = computed(() => {
-    return Object.values(entries)
+    return Object.values(props.entries)
         .reduce((total, obj) => obj.amount + total, 0)
         .toFixed(2);
 });
@@ -23,7 +23,7 @@ const symbol = computed(()=>{
         <td class="pt-2"></td>
         <td class="pt-2"></td>
         <td class="pt-2"></td>
-        <td class="pt-2">{{ symbol + Math.abs(sum) }}</td>
+        <td class="pt-2 pl-1">{{ symbol + Math.abs(sum) }}</td>
         <td class="pt-2"></td>
         <td class="">
             <div class="flex gap-4 justify-end pr-4">

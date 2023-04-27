@@ -15,6 +15,8 @@ const props = defineProps({
   }
 });
 
+const emit = defineEmits(['close']);
+
 const categories = props.categories;
 const entry = props.entry;
 
@@ -61,20 +63,27 @@ const checkSubcategories = (event = null) => {
   }
 };
 
-
+const submitForm = () => {
+  if(!Object.keys(entry.value).length){
+    form.post(props.target, { onSuccess: () => { form.reset(); emit('close'); }, preserveScroll: true }, { resetOnSuccess: false })
+  } else{
+    form.patch(props.target, { onSuccess: () => { form.reset(); emit('close'); }, preserveScroll: true }, { resetOnSuccess: false })
+  }
+}
 
 </script>
 
 <template>
   <Transition name="modal">
     <div v-if="show" class="fixed z-50 top-0 left-0 w-full h-full bg-black bg-opacity-50 flex transition-opacity"
-      @click="(event) => { if (!form.processing) $emit('close') }">
-      <div @click.stop class="px-8 py-5 m-auto rounded-lg max-w-xl bg-white transition-all duration-300 ease-out">
+      @mousedown="(event) => { if (!form.processing) $emit('close') }">
+      <div @mousedown.stop class="px-8 py-5 m-auto rounded-lg max-w-xl bg-white transition-all duration-300 ease-out">
         <div class="text-black font-bold text-lg mt-0">
           <slot name="header">Update entry</slot>
         </div>
+        <!-- PATCH OR POST -->
         <form
-          @submit.prevent="form.patch(target, { onSuccess: () => { form.reset(); $emit('close'); }, preserveScroll: true }, { resetOnSuccess: false })">
+          @submit.prevent="submitForm">
 
           <div class="mx-auto bg-white py-8">
             <div class="mx-auto grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-4">
