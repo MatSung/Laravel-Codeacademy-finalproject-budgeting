@@ -21,7 +21,7 @@ class EntryFactory extends Factory
             'transaction_date' => fake()->dateTimeBetween('-3 weeks')->format('Y-m-d H:i:s'),
             'category_id'=> EntryCategory::factory(),
             'amount' => fake()->randomFloat(2, -100, 100),
-            'note' => fake()->word(),
+            'note' => fake()->words(5, true),
         ];
     }
 }

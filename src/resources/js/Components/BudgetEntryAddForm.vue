@@ -3,50 +3,36 @@
 import { useForm } from '@inertiajs/vue3';
 import InputError from '@/Components/InputError.vue';
 import PrimaryButton from '@/Components/Buttons/PrimaryButton.vue';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
+import mapValues from 'lodash/mapValues';
 
 const props = defineProps(['categories']);
 
-const categories = props.categories;
+const categories = computed(() => props.categories);
 
 const form = useForm({
     transaction_date: '',
-    category_id: 1,
+    category_id: null,
     subcategory_id: null,
     amount: 0,
     note: null
 });
 
-
-const subcategorySelect = ref(null);
 const categorySelect = ref(null);
 
-const hasSubcategories = ref(false);
-const currentSubcategories = ref([]);
-
-const checkSubcategories = (event) => {
-    hasSubcategories.value = false;
-    let subcategoriesToPass = categories[categorySelect.value.value].subcategories ?? [];
-    currentSubcategories.value = subcategoriesToPass;
-    form.subcategory_id = null;
-    if (subcategoriesToPass.length) {
-        hasSubcategories.value = true;
-    }
+const reset = () => {
+    form = mapValues(form, () => null);
 };
 
 
-onMounted(() => {
-    checkSubcategories({ target: { value: 1 } });
-});
 
 </script>
 
 <template>
     <div class="container max-w-2xl mx-auto mt-8 border rounded overflow-hidden">
-        <form @submit.prevent="form.post(route('entries.store'), { onSuccess: () => {form.reset(); currentSubcategories = [];} }, {resetOnSuccess: false})">
+        <form @submit.prevent="form.post(route('entries.store'), { onSuccess: () => { reset; } }, { resetOnSuccess: false })">
             <div class="mx-auto bg-white p-8">
                 <div class="mx-auto grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-4">
-
                     <div class="col-span-2">
                         <label for="transaction_date"
                             class="block text-md font-medium leading-6 mb-2 text-gray-900">Transaction
@@ -56,28 +42,25 @@ onMounted(() => {
                             class="block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                     </div>
                     <div class="col-span-1">
-                        <label for="category_id"
-                            class="block text-md font-medium leading-6 mb-2 text-gray-900">Category - <a class="text-blue-400" :href="route('categories.index')">Edit</a></label>
-
-                        <select ref="categorySelect" @change="checkSubcategories" name="category_id"
+                        <label for="category_id" class="block text-md font-medium leading-6 mb-2 text-gray-900">Category -
+                            <a class="text-blue-400" :href="route('categories.index')">Edit</a></label>
+                        <select ref="categorySelect" @change="form.subcategory_id = null" name="category_id"
                             v-model="form.category_id"
                             class="block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             <option value="0" selected disabled>Please select a category</option>
                             <option v-for="category in categories" :value="category.id">{{ category.name }}</option>
-
                         </select>
                     </div>
-                    <!-- reset the subcategory on selection of a different thing -->
-                    <div v-if="currentSubcategories.length" class="col-span-1">
+                    <div v-if="categories[form.category_id]?.subcategories.length" class="col-span-1">
                         <label for="subcategory_id"
                             class="block text-md font-medium leading-6 mb-2 text-gray-900">Subcategory</label>
                         <select name="subcategory_id" v-model="form.subcategory_id"
                             class="block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                            <option value="" disabled>none</option>
-                            <option v-for="subcategory in currentSubcategories" :value="subcategory.id">{{ subcategory.name }}</option>
+                            <option value="" selected></option>
+                            <option v-for="subcategory in categories[form.category_id]?.subcategories"
+                                :value="subcategory.id">{{ subcategory.name }}</option>
                         </select>
                     </div>
-
                     <div class="col-span-2">
                         <label for="amount" class="block text-md font-medium leading-6 mb-2 text-gray-900">Amount</label>
                         <div class="cursor-pointer relative mt-2 rounded-md shadow-sm">
@@ -90,16 +73,15 @@ onMounted(() => {
                                 placeholder="0.00" />
                         </div>
                     </div>
-
                     <div class="col-span-2">
                         <label for="note" class="block text-md font-medium leading-6 mb-2 text-gray-900">Note</label>
-                        <input name="note" type="text" v-model="form.note"
+                        <input name="note" maxlength="50" type="text" v-model="form.note"
                             class="block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-
                     </div>
                     <InputError v-for="error in form.errors" :message="error" class="mt-2 col-span-full" />
                     <slot>
-                        <PrimaryButton :disabled="form.processing" class="col-span-full text-center py-3 px-8 mx-auto">Add</PrimaryButton>
+                        <PrimaryButton :disabled="form.processing" class="col-span-full text-center py-3 px-8 mx-auto">Add
+                        </PrimaryButton>
                     </slot>
                 </div>
             </div>

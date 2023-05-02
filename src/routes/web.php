@@ -5,6 +5,7 @@ use Illuminate\Http\RedirectResponse;
 use App\Http\Controllers\EntryController;
 use App\Http\Controllers\EntryCategoryController;
 use App\Http\Controllers\EntrySubcategoryController;
+use App\Http\Controllers\SettingsController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -20,10 +21,10 @@ use Inertia\Inertia;
 */
 
 Route::get('/', function (): RedirectResponse {
-    return redirect(route('entries.index'));
+    return redirect(route('dashboard'));
 });
 
-Route::Get('/dashboard', DashboardController::class)->name('dashboard');
+Route::get('/dashboard', DashboardController::class)->name('dashboard');
 
 Route::resource('/entries', EntryController::class, [
     'names' => [
@@ -55,6 +56,19 @@ Route::resource('/subcategories', EntrySubcategoryController::class, [
     ]
 ])->except(['save', 'edit']);
 
+
 Route::get('/about', function () {
     return Inertia::render('Budgeting/About');
+})->name('about');
+
+////////////////////////////////////////////
+// settings
+
+Route::prefix('settings')->group(function() {
+
+    Route::get('/', SettingsController::class)->name('settings');
+
+    Route::get('/export', [SettingsController::class, 'export'])->name('export');
+
+    Route::post('/import', [SettingsController::class, 'import'])->name('import');
 });

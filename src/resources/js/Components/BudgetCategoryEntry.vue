@@ -46,7 +46,7 @@ const form = useForm({
                             class="absolute inset-y-0 rounded-lg bg-white border-gray-500 border w-8">
                             ➕
                         </button>
-                        <input type="text" v-model="form.name" class="rounded-lg pl-10 py-1 " required maxlength="20"
+                        <input type="text" v-model="form.name" class="rounded-lg pl-10 py-1 w-60" required maxlength="20"
                             placeholder="New Subcategory">
                         <button @click="form.cancel(); adding = false; "
                             class="absolute inset-y-0 right-0 rounded-lg bg-white border-gray-500 border w-8">

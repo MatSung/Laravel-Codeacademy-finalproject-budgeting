@@ -1,19 +1,22 @@
 <script setup>
 import { reactive, ref, watch } from 'vue'
 import { computed } from '@vue/reactivity';
-import { usePage, Link } from '@inertiajs/vue3';
+import { usePage, Link, useForm, router } from '@inertiajs/vue3';
+import mapValues from 'lodash/mapValues'
+import pickBy from 'lodash/pickBy'
 import BudgetEntry from './BudgetEntry.vue';
-import BudgetUtilityRow from '@/Components/BudgetUtilityRow.vue';
 import DeleteModal from '@/Components/DeleteModal.vue';
 import UpdateModal from '@/Components/EntryUpdateModal.vue';
 import BudgetEntryDayDivider from '@/Components/BudgetEntryDayDivider.vue';
 import Pagination from '@/Components/Pagination.vue';
 
-const props = defineProps(['entries' ,'categories', 'grouping', 'pagination']);
 
-const pagination = computed(()=>props.pagination);
-const entries = computed(()=>props.entries);
+const props = defineProps(['entries', 'categories', 'grouping', 'pagination', 'filters']);
+
+const pagination = computed(() => props.pagination);
+const entries = computed(() => props.entries);
 const categories = props.categories;
+const filters = computed(() => props.filters);
 
 
 // Delete modal
@@ -63,43 +66,104 @@ const datesByDay = computed(() => {
     }, {})
 });
 
+const form = reactive({
+    order: filters.value.order,
+    order_by: filters.value.order_by,
+    group_by: filters.value.group_by,
+    category: filters.value.category,
+    income: filters.value.income,
+    subcategory: filters.value.subcategory,
+});
+
+
+watch(form, () => {
+    router.get(usePage().url.split('?').shift(), pickBy(form), { preserveState: true });
+});
+
+const reset = () => {
+    form = mapValues(form, () => null);
+};
+
+const sum = computed(() => {
+    return Object.values(props.entries)
+        .reduce((total, obj) => obj.amount + total, 0)
+        .toFixed(2);
+});
+
+const symbol = computed(() => {
+    return sum.value < 0 ? '-' : (sum.value == 0) ? '±' : '+';
+});
+
 
 </script>
 
 <template>
     <div>
-        <table class="border-collapse table-auto w-full text-md mb-4">
+        <table class="border-collapse table-fixed w-full text-md mb-4">
             <thead>
                 <tr>
-                    <th class=" font-bold pl-2 pt-2 pb-3 text-white text-left bg-slate-800">
-                        Date/Time <a href="?group_by">📆</a><a href="?group_by=day">⏰</a>
+                    <th class=" font-bold pl-2 pt-2 pb-3 text-white text-left bg-slate-800 lg:w-44 sm:w-28">
+                        Date/Time
+                        <button type="button" @click="form.group_by = null"
+                            v-if="$page.url.includes('group_by')">📆</button>
+                        <button type="button" @click="form.group_by = 'day'"
+                            v-if="!$page.url.includes('group_by=day')">⏰</button>
                     </th>
-                    <th class=" font-bold pt-2 pb-3 text-white text-left bg-slate-800">Income/Expense</th>
-                    <th class=" font-bold pt-2 pb-3 text-white text-left bg-slate-800">Category</th>
-                    <th class=" font-bold pt-2 pb-3 text-white text-left bg-slate-800">Subcategory</th>
-                    <th class=" font-bold pt-2 pb-3 text-white text-left bg-slate-800">Amount</th>
+                    <th class=" font-bold pt-2 pb-3 text-white text-left bg-slate-800 w-28">Inc/Exp</th>
+                    <th class=" font-bold pt-2 pb-3 text-white text-left bg-slate-800 w-44">Category</th>
+                    <th class=" font-bold pt-2 pb-3 text-white text-left bg-slate-800 w-44">Subcategory</th>
+                    <th class=" font-bold pt-2 pb-3 text-white text-left bg-slate-800 w-32">Amount</th>
                     <th class=" font-bold pt-2 pb-3 text-white text-left bg-slate-800">Note</th>
-                    <th class=" font-bold pt-2 pb-3 text-white text-left bg-slate-800">Actions</th>
+                    <th class=" font-bold pt-2 pb-3 text-white text-left bg-slate-800 w-20">Actions</th>
                 </tr>
             </thead>
-            <tbody v-if="!grouping">
-                <BudgetUtilityRow :entries="entries" @show-create-modal="activateCreateModal" />
-                <BudgetEntry v-for="entry in entries" :key="entry.id" :entry="entry"
-                    @show-delete-modal="activateDeleteModal" @show-update-modal="activateUpdateModal" />
+            <tbody>
+                <tr class="bg-slate-300 border-b-2 text-gray-500">
+                    <td class=""></td>
+                    <td class="">
+                        <select class="w-full" v-model="form.income">
+                            <option value=""></option>
+                            <option value="income">Income</option>
+                            <option value="expense">Expense</option>
+                        </select>
+                    </td>
+                    <td class="">
+                        <select class="w-full" name="category" v-model="form.category" @change="form.subcategory=null">
+                            <option value=""></option>
+                            <option v-for="category in categories" :value="category.id">{{ category.name }}</option>
+                        </select>
+                    </td>
+                    <td class="">
+                        <select class="w-full" v-if="categories[form.category]?.subcategories.length" v-model="form.subcategory" id="">
+                            <option value=""></option>
+                            <option v-for="subcategory in categories[form.category]?.subcategories" :value="subcategory.id">{{ subcategory.name }}</option>
+
+                        </select>
+                    </td>
+                    <td class="pt-2 pl-1">{{ symbol + Math.abs(sum) }}</td>
+                    <td class="pt-2"></td>
+                    <td class="">
+                        <div class="flex gap-4 justify-end pr-4">
+                            <a href="#" class="w-4 inline-block" @click="activateCreateModal">➕</a>
+                        </div>
+                    </td>
+                </tr>
+                <template v-if="!grouping">
+                    <BudgetEntry v-for="entry in entries" :key="entry.id" :entry="entry"
+                        @show-delete-modal="activateDeleteModal" @show-update-modal="activateUpdateModal" />
+                </template>
+                <template v-else>
+                    <BudgetEntryDayDivider v-for="(item, key) in datesByDay">
+                        <template #date>
+                            {{ key }}
+                        </template>
+                        <template #items>
+                            <BudgetEntry v-for="subEntry in item" :key="subEntry.id" :entry="subEntry"
+                                @show-delete-modal="activateDeleteModal" @show-update-modal="activateUpdateModal" />
+                        </template>
+                    </BudgetEntryDayDivider>
+                </template>
             </tbody>
-            <tbody v-if="grouping">
-                <BudgetUtilityRow :entries="entries" @show-create-modal="activateCreateModal" />
-                <BudgetEntryDayDivider v-for="(item, key) in datesByDay">
-                    <template #date>
-                        {{ key }}
-                    </template>
-                    <template #items>
-                        <BudgetEntry v-for="subEntry in item" :key="subEntry.id" :entry="subEntry"
-                            @show-delete-modal="activateDeleteModal" @show-update-modal="activateUpdateModal" />
-                    </template>
-                </BudgetEntryDayDivider>
-            </tbody>
-            <Pagination :links="pagination" />
             <Teleport to="body">
                 <DeleteModal :show="deletionState.show" :target="deletionState.target" @close="deletionState.show = false">
                     <template #header>
@@ -120,5 +184,6 @@ const datesByDay = computed(() => {
                 </UpdateModal>
             </Teleport>
         </table>
+        <Pagination :links="pagination" />
     </div>
 </template>

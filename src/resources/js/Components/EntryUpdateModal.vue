@@ -3,6 +3,7 @@ import { useForm } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
 import InputError from '@/Components/InputError.vue';
 import PrimaryButton from '@/Components/Buttons/PrimaryButton.vue';
+import mapValues from 'lodash/mapValues';
 
 
 const props = defineProps({
@@ -22,7 +23,7 @@ const entry = props.entry;
 
 let form = useForm({
   transaction_date: '',
-  category_id: 1,
+  category_id: null,
   subcategory_id: null,
   amount: 0,
   note: ''
@@ -32,14 +33,12 @@ watch(entry, () => {
   if (!Object.keys(entry.value).length) {
     form = useForm({
       transaction_date: '',
-      category_id: 1,
+      category_id: null,
       subcategory_id: null,
       amount: 0,
       note: ''
     });
-    checkSubcategories({ target: { value: 1 } });
   } else {
-    checkSubcategories({ target: { value: entry.value.category ? entry.value.category.id : null } });
     form = useForm({
       transaction_date: entry.value.transaction_date,
       category_id: entry.value.category ? entry.value.category.id : null,
@@ -50,23 +49,14 @@ watch(entry, () => {
   }
 });
 
-const hasSubcategories = ref(false);
-const currentSubcategories = ref([]);
-
-const checkSubcategories = (event = null) => {
-  hasSubcategories.value = false;
-  let subcategoriesToPass = categories[event.target.value].subcategories ?? [];
-  currentSubcategories.value = subcategoriesToPass;
-  form.subcategory_id = null;
-  if (subcategoriesToPass.length) {
-    hasSubcategories.value = true;
-  }
+const reset = () => {
+  form = mapValues(form, () => null);
 };
 
 const submitForm = () => {
-  if(!Object.keys(entry.value).length){
+  if (!Object.keys(entry.value).length) {
     form.post(props.target, { onSuccess: () => { form.reset(); emit('close'); }, preserveScroll: true }, { resetOnSuccess: false })
-  } else{
+  } else {
     form.patch(props.target, { onSuccess: () => { form.reset(); emit('close'); }, preserveScroll: true }, { resetOnSuccess: false })
   }
 }
@@ -82,9 +72,7 @@ const submitForm = () => {
           <slot name="header">Update entry</slot>
         </div>
         <!-- PATCH OR POST -->
-        <form
-          @submit.prevent="submitForm">
-
+        <form @submit.prevent="submitForm">
           <div class="mx-auto bg-white py-8">
             <div class="mx-auto grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-4">
 
@@ -96,21 +84,23 @@ const submitForm = () => {
                   class="block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
               </div>
               <div class="col-span-1">
-                <label for="category_id" class="block text-md font-medium leading-6 mb-2 text-gray-900">Category - <a class="text-blue-400" :href="route('categories.index')">Edit</a></label>
-                <select ref="categorySelect" @change="checkSubcategories" name="category_id" v-model="form.category_id"
+                <label for="category_id" class="block text-md font-medium leading-6 mb-2 text-gray-900">Category - <a
+                    class="text-blue-400" :href="route('categories.index')">Edit</a></label>
+                <select required ref="categorySelect" @change="form.subcategory_id = null" name="category_id"
+                  v-model="form.category_id"
                   class="block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                   <option value="0" selected disabled>Please select a category</option>
                   <option v-for="category in categories" :value="category.id">{{ category.name }}</option>
                 </select>
               </div>
-              <!-- reset the subcategory on selection of a different thing -->
-              <div v-if="currentSubcategories.length" class="col-span-1">
+              <div v-if="categories[form.category_id]?.subcategories.length" class="col-span-1">
                 <label for="subcategory_id"
                   class="block text-md font-medium leading-6 mb-2 text-gray-900">Subcategory</label>
                 <select name="subcategory_id" v-model="form.subcategory_id"
                   class="block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                  <option value="" disabled>none</option>
-                  <option v-for="subcategory in currentSubcategories" :value="subcategory.id">{{ subcategory.name }}
+                  <option value=""></option>
+                  <option v-for="subcategory in categories[form.category_id]?.subcategories" :value="subcategory.id">{{
+                    subcategory.name }}
                   </option>
                 </select>
               </div>
@@ -129,7 +119,7 @@ const submitForm = () => {
               </div>
               <div class="col-span-2">
                 <label for="note" class="block text-md font-medium leading-6 mb-2 text-gray-900">Note</label>
-                <input name="note" type="text" v-model="form.note"
+                <input name="note" maxlength="50" type="text" v-model="form.note"
                   class="block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
 
               </div>
@@ -138,12 +128,13 @@ const submitForm = () => {
           </div>
 
           <div class="flex-row gap-x-2 flex">
-            <PrimaryButton :disabled="form.processing"><slot name="button">Update</slot></PrimaryButton>
+            <PrimaryButton :disabled="form.processing">
+              <slot name="button">Update</slot>
+            </PrimaryButton>
             <PrimaryButton :type="'button'" :disabled="form.processing" @click="$emit('close')">Cancel</PrimaryButton>
           </div>
 
         </form>
       </div>
     </div>
-  </Transition>
-</template>
+</Transition></template>

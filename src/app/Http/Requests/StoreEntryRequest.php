@@ -32,7 +32,7 @@ class StoreEntryRequest extends FormRequest
                 'nullable',
                 Rule::exists('entry_subcategories', 'id')->where('parent_id', request('category_id'))
             ],
-            'note' => 'nullable|string|max:255'
+            'note' => 'nullable|string|max:50'
         ];
     }
     public function messages(): array

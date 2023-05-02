@@ -3,7 +3,6 @@ import { Link } from '@inertiajs/vue3';
 
 const props = defineProps(['links']);
 
-
 </script>
 
 <template>
@@ -14,7 +13,7 @@ const props = defineProps(['links']);
                     class="mb-1 mr-1 px-4 py-3 text-gray-400 text-sm leading-4 border rounded" v-html="link.label" />
                 <Link v-else :key="`link-${key}`"
                     class="mb-1 mr-1 px-4 py-3 focus:text-indigo-500 text-sm leading-4 hover:bg-white border focus:border-indigo-500 rounded"
-                    :class="{ 'bg-white': link.active }" :href="link.url" v-html="link.label" />
+                    :class="{ 'bg-white': link.active }" :href="link.url" v-html="link.label" :only="['data']" preserve-scroll />
             </template>
         </div>
 </div></template>

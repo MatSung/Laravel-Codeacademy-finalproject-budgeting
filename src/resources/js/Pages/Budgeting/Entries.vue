@@ -6,9 +6,12 @@ import EntryTable from '@/Components/EntryTable.vue';
 import { useForm, Head, usePage } from '@inertiajs/vue3';
 import { computed, reactive } from '@vue/reactivity';
 
-const props = defineProps(['entries','categories', 'filters']);
+const props = defineProps(['data','categories', 'filters']);
 
-const entries = computed(() => usePage().props.entries);
+const data = computed(() => usePage().props.data);
+const entries = computed(() => props.data.data);
+const filters = computed(() => props.filters);
+const categories = computed(()=> props.categories);
 
 </script>
 
@@ -17,7 +20,8 @@ const entries = computed(() => usePage().props.entries);
     <DefaultLayout>
         <BudgetEntryAddForm :categories="categories"/>
         <div class="container max-w-7xl mx-auto mt-8 rounded overflow-hidden">
-            <EntryTable :categories="categories" :entries="entries" :grouping="filters.group_by == 'day'"/>
+            <EntryTable :categories="categories" :entries="entries" :grouping="filters.group_by == 'day'"
+                :pagination="data.links" :filters="filters"/>
         </div>
     </DefaultLayout>
 

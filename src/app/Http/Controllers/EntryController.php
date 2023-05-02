@@ -7,9 +7,11 @@ use App\Http\Requests\UpdateEntryRequest;
 use App\Models\Entry;
 use App\Models\EntryCategory;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Request as RequestFacade;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Request as FacadeRequest;
 use Inertia\Inertia;
+use Illuminate\Support\Str;
 use Inertia\Response;
 
 class EntryController extends Controller
@@ -23,26 +25,57 @@ class EntryController extends Controller
         // sorting
         // pages
         // by category?
-        
-        $sort = request('sort') === 'asc' ? 'asc' : 'desc';
-        
-        $queryBuilder = Entry::query();
 
-        if ($sort === 'desc'){
-            $queryBuilder->latest('transaction_date');
-        } else {
-            $queryBuilder->oldest('transaction_date');
+        $orderBy = request('order_by');
+        $pageSize = 15;
+
+        $allowedOrderByValues = Entry::getColumns();
+
+        foreach ($allowedOrderByValues as &$value) {
+            if (Str::endsWith($value, '_id')) $value = substr($value, 0, -3);
         }
 
-        $entries = $queryBuilder->get()->toArray();
+        if (!in_array(request('order_by'), $allowedOrderByValues)) {
+            $orderBy = 'transaction_date';
+        }
+
+        $order = request('order') === 'asc' ? 'asc' : 'desc';
+
+        $queryBuilder = Entry::query()
+            ->select('entries.*')
+            ->join('entry_categories', 'entry_categories.id', '=', 'entries.category_id');
 
 
+        // filtering
+        $queryBuilder->filter(RequestFacade::only('category', 'subcategory', 'income'));
+
+        // ordering
+        if ($orderBy === 'category') {
+            $queryBuilder->orderBy('entry_categories.name', $order);
+        } else {
+            $queryBuilder->orderBy($orderBy, $order);
+        }
+
+
+        // pagination
+        $data = $queryBuilder->paginate($pageSize)->withQueryString();
+
+
+        // entries
+        // $entries = $queryBuilder->get()->toArray();
+
+        // dd($data);
+
+        // categories
         $categories = EntryCategory::with('subcategories')->get()->keyBy('id');
 
-        return Inertia::render('Budgeting/Entries',[
-            'entries' => $entries,
+        // dd($categories->toArray());
+
+        return Inertia::render('Budgeting/Entries', [
+            'data' => $data,
             'categories' => $categories,
-            'filters' => FacadeRequest::all('order', 'order_by', 'group_by', 'income', 'category', 'subcategory')
+            'filters' => RequestFacade::all('order', 'order_by', 'group_by', 'income', 'category', 'subcategory', 'page'),
+            // 'entries' => $data->items()
         ]);
     }
 
@@ -93,7 +126,7 @@ class EntryController extends Controller
 
         $validated['transaction_date'] = $validated['transaction_date'] ?? now()->toDateTimeString();
         $validated['transaction_date'] = date("Y-m-d H:i:s", strtotime($validated['transaction_date']));
-        
+
         $validated['subcategory_id'] = $validated['subcategory_id'] ?? null;
         $entry->update($validated);
         return back(303);

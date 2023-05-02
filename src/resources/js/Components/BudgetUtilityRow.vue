@@ -2,7 +2,7 @@
 
 import { reactive, computed } from 'vue'
 
-const props = defineProps(['entries']);
+const props = defineProps(['entries', 'form']);
 // const entries = props.entries;
 
 const sum = computed(() => {
@@ -20,8 +20,17 @@ const symbol = computed(()=>{
 <template>
     <tr class="bg-slate-300 border-b-2 text-gray-500">
         <td class="pt-2"></td>
-        <td class="pt-2"></td>
-        <td class="pt-2"></td>
+        <td class="pt-2">
+            <select>
+
+            </select>
+        </td>
+        <td class="pt-2">
+            <select name="category" v-model="form.category">
+                <option value="1">1</option>
+                <option value="2">2</option>
+            </select>
+        </td>
         <td class="pt-2"></td>
         <td class="pt-2 pl-1">{{ symbol + Math.abs(sum) }}</td>
         <td class="pt-2"></td>

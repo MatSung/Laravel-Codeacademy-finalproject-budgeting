@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('subcategory_id')->nullable()
                 ->constrained('entry_subcategories')->nullOnDelete(); 
             $table->float('amount', 10, 2);
-            $table->string('note', 255)->nullable();
+            $table->string('note', 50)->nullable();
             $table->timestamps();
         });
     }
