@@ -1,11 +1,10 @@
 <script setup>
 
 import DefaultLayout from '@/Layouts/DefaultLayout.vue';
-import Socials from '@/Components/Socials.vue';
 import ImportExport from '@/Components/ImportExport.vue';
-import { Head, usePage, useForm, Link } from '@inertiajs/vue3';
-import { computed } from '@vue/reactivity';
-import { ref } from 'vue';
+import PurgeButton from '@/Components/PurgeButton.vue';
+import { Head } from '@inertiajs/vue3';
+
 
 
 
@@ -20,6 +19,7 @@ import { ref } from 'vue';
             <div class="bg-white rounded-lg p-5">
                 
                 <ImportExport />
+                <PurgeButton />
             </div>
         </div>
     </DefaultLayout>

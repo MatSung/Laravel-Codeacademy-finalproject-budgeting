@@ -1,6 +1,13 @@
 <script setup>
-import { useForm, Link } from '@inertiajs/vue3';
+import { useForm, Link, usePage } from '@inertiajs/vue3';
 import PrimaryButton from './Buttons/PrimaryButton.vue';
+import InputError from '@/Components/InputError.vue';
+import InputSuccess from '@/Components/InputSuccess.vue';
+import { computed } from 'vue';
+
+const successMessage = computed(() => {
+    return usePage().props.flash.notification;
+});
 
 const form = useForm({
     importFile: File,
@@ -24,9 +31,12 @@ const form = useForm({
             Import data
         </h2>
         <div class="pl-3">
-            <form @submit.prevent="form.post(route('import'))">
-                <input type="file" accept=".json" name="file" id="" @change="form.importFile = $event.target.files[0]">
+            <form @submit.prevent="form.post(route('import'), { onSuccess: () => { } })">
+                <input required type="file" accept=".json" name="file" id=""
+                    @change="form.importFile = $event.target.files[0]">
                 <PrimaryButton :disabled="form.processing">Import</PrimaryButton>
+                <InputError v-for="error in form.errors" :message="error" class="mt-2 col-span-full" />
+                <InputSuccess v-if="successMessage" :message="successMessage" />
             </form>
         </div>
     </div>

@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Validation\ValidationException;
 
 class Entry extends Model
 {
@@ -85,8 +87,53 @@ class Entry extends Model
             });
     }
 
+    public static function importFromArray(array $arr): bool
+    {
+        $categoryIds = [];
+        if (isset($arr['categories'])) {
+            foreach ($arr['categories'] as $key => $category) {
+                $categoryName = $category['name'];
+                $existingCategory = EntryCategory::where('name', '=', $categoryName)->first();
+
+                if (!$existingCategory) {
+                    $existingCategory = EntryCategory::create([
+                        'name' => $categoryName
+                    ]);
+                }
+                $categoryIds[$categoryName] = ['id' => $existingCategory->id];
+
+                foreach ($category['subcategories'] as $key => $subcategory) {
+                    $existingSubcategory = EntrySubcategory::where('name', '=', $subcategory)
+                        ->where('parent_id', '=', $categoryIds[$categoryName]['id']);
+                    if (!$existingSubcategory) {
+                        $existingSubcategory = EntrySubcategory::create([
+                            'name' => $subcategory,
+                            'parent_id' => $categoryIds[$categoryName]
+                        ]);
+                    }
+                    $categoryIds[$categoryName]['subcategories'] = [$subcategory => $existingSubcategory->id];
+                }
+            }
+        } else {
+            throw ValidationException::withMessages([
+                'fileInput' => 'The format of the import file is either corrupt or invalid'
+            ]);
+        }
+        
+        if (isset($arr['entries'])) {
+            foreach ($arr['entries'] as $key => $value) {
+                if($value['subcategory']) $value['subcategory_id'] = $categoryIds[$value['category']][$value['subcategory']];
+                $value['category_id'] = $categoryIds[$value['category']]['id'];
+                unset($value['category']);
+                unset($value['subcategory']);
+                Entry::create($value);
+            }
+        }
+        return true;
+    }
+
     /**
-     * Formats entire database to a string for export.
+     * Formats entire database to a json string for export.
      *
      * @return string
      */
@@ -100,24 +147,20 @@ class Entry extends Model
         //
 
         $result = [
-            'categories' => [
-
-            ],
-            'entries' => [
-
-            ]
+            'categories' => [],
+            'entries' => []
         ];
 
         $categories = EntryCategory::with('subcategories')->get();
-        $categories->each(function($item, $key) use (&$result){
-            array_push($result['categories'],[
+        $categories->each(function ($item, $key) use (&$result) {
+            array_push($result['categories'], [
                 'name' => $item->name,
                 'subcategories' => $item->subcategories->pluck('name')->toArray()
             ]);
         });
         $entries = self::all();
-        $entries->each(function($item,$key) use (&$result){
-            array_push($result['entries'],[
+        $entries->each(function ($item, $key) use (&$result) {
+            array_push($result['entries'], [
                 'transaction_date' => $item->transaction_date,
                 'amount' => $item->amount,
                 'note' => $item->note,
@@ -125,7 +168,7 @@ class Entry extends Model
                 'subcategory' => isset($item->subcategory) ? $item->subcategory->name : null,
             ]);
         });
-        return json_encode($result);
+        return json_encode($result, JSON_PRETTY_PRINT);
     }
 
     /**
@@ -134,7 +177,7 @@ class Entry extends Model
      * @param  Collection $entryCollection
      * @return array
      */
-    public static function stats(\Illuminate\Database\Eloquent\Collection $entryCollection): array
+    public static function stats(Collection $entryCollection): array
     {
         $groupedEntries = $entryCollection->groupBy('category.name');
 
@@ -173,7 +216,7 @@ class Entry extends Model
      * @param Collection $entryCollection
      * @return array
      */
-    public static function sortedStats(\Illuminate\Database\Eloquent\Collection $entryCollection): array
+    public static function sortedStats(Collection $entryCollection): array
     {
         $unsortedStats = self::stats($entryCollection);
 

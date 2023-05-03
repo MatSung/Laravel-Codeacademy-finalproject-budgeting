@@ -6,6 +6,7 @@ use App\Http\Controllers\EntryController;
 use App\Http\Controllers\EntryCategoryController;
 use App\Http\Controllers\EntrySubcategoryController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\StatisticsController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -56,6 +57,8 @@ Route::resource('/subcategories', EntrySubcategoryController::class, [
     ]
 ])->except(['save', 'edit']);
 
+Route::get('/statistics', StatisticsController::class)->name('statistics');
+
 
 Route::get('/about', function () {
     return Inertia::render('Budgeting/About');
@@ -71,4 +74,6 @@ Route::prefix('settings')->group(function() {
     Route::get('/export', [SettingsController::class, 'export'])->name('export');
 
     Route::post('/import', [SettingsController::class, 'import'])->name('import');
+    
+    Route::get('/purge', [SettingsController::class, 'purge'])->name('purge');
 });

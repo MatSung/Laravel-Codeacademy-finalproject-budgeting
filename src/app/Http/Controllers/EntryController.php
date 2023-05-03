@@ -96,7 +96,6 @@ class EntryController extends Controller
 
         $validated['transaction_date'] = $validated['transaction_date'] ?? now()->toDateTimeString();
         $validated['transaction_date'] = date("Y-m-d H:i:s", strtotime($validated['transaction_date']));
-
         Entry::create($validated);
         return back(303);
     }
