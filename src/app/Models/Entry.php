@@ -104,14 +104,14 @@ class Entry extends Model
 
                 foreach ($category['subcategories'] as $key => $subcategory) {
                     $existingSubcategory = EntrySubcategory::where('name', '=', $subcategory)
-                        ->where('parent_id', '=', $categoryIds[$categoryName]['id']);
+                        ->where('parent_id', '=', $categoryIds[$categoryName]['id'])->first();
                     if (!$existingSubcategory) {
                         $existingSubcategory = EntrySubcategory::create([
                             'name' => $subcategory,
-                            'parent_id' => $categoryIds[$categoryName]
+                            'parent_id' => $categoryIds[$categoryName]['id']
                         ]);
                     }
-                    $categoryIds[$categoryName]['subcategories'] = [$subcategory => $existingSubcategory->id];
+                    $categoryIds[$categoryName]['subcategories'][$subcategory] = $existingSubcategory->id;
                 }
             }
         } else {
@@ -119,10 +119,10 @@ class Entry extends Model
                 'fileInput' => 'The format of the import file is either corrupt or invalid'
             ]);
         }
-        
+
         if (isset($arr['entries'])) {
             foreach ($arr['entries'] as $key => $value) {
-                if($value['subcategory']) $value['subcategory_id'] = $categoryIds[$value['category']][$value['subcategory']];
+                if ($value['subcategory']) $value['subcategory_id'] = $categoryIds[$value['category']]['subcategories'][$value['subcategory']];
                 $value['category_id'] = $categoryIds[$value['category']]['id'];
                 unset($value['category']);
                 unset($value['subcategory']);
@@ -186,28 +186,45 @@ class Entry extends Model
             'expense' => [],
         ];
 
-        $groupedEntries->each(function ($item, $categoryName) use (&$stats) {
+        $groupedEntries->each(function (Collection $item, string $categoryName) use (&$stats) {
 
             $sortedArr = $item->groupBy(function ($item, int $key) {
                 return $item->amount >= 0 ? 'income' : 'expense';
             });
 
-            array_push($stats['income'], [
-                'name' => $categoryName,
-                'amount' => isset($sortedArr['income']) ?
-                    round($sortedArr['income']->sum('amount'), 2) :
-                    0
-            ]);
+            array_push($stats['income'], self::collateStats($sortedArr, $categoryName, 'income'));
 
-            array_push($stats['expense'], [
-                'name' => $categoryName,
-                'amount' => isset($sortedArr['expense']) ?
-                    round($sortedArr['expense']->sum('amount'), 2) :
-                    0
-            ]);
+            array_push($stats['expense'], self::collateStats($sortedArr, $categoryName, 'expense'));
         });
 
         return $stats;
+    }
+
+    private static function collateStats($sortedArr, $categoryName, $type = 'income'): array
+    {
+        $arrToPush = [
+            'name' => $categoryName,
+            'amount' => isset($sortedArr[$type]) ?
+                round($sortedArr[$type]->sum('amount'), 2) :
+                0,
+            'subcategories' => []
+        ];
+
+        if (isset($sortedArr[$type])) {
+            $sortedArr[$type]->groupBy(function ($item) {
+                return isset($item->subcategory) ? $item->subcategory->name : 'none';
+            })->each(function ($item, $subcategoryName) use (&$arrToPush) {
+                $arrToPush['subcategories'][] = [
+                    'name' => $subcategoryName,
+                    'amount' => round($item->sum('amount'), 2)
+                ];
+            });
+        }
+        if(count($arrToPush['subcategories']) <= 1){
+            $arrToPush['subcategories'] = [];
+        }
+
+        return $arrToPush;
     }
 
     /**
@@ -230,4 +247,6 @@ class Entry extends Model
 
         return $stats;
     }
+
+
 }

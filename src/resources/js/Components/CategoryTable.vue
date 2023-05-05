@@ -22,6 +22,7 @@ const msgs = {
     'category-delete-msg': 'Are you sure you want to delete this category?',
     'cannot-delete-category': 'Unable to delete category due to existing entries.',
     'also-delete-subcategories': 'This category still has subcategories which will be deleted as well!',
+    'cannot-delete-last-category': 'You may not delete the last category.',
     'categories': 'category',
     'subcategories': 'subcategory'
 };
@@ -38,6 +39,9 @@ const activateDeleteModal = (item, isSubcategory = false) => {
     } else {
         if (item.entries_count > 0) {
             msg.value = msgs['cannot-delete-category'];
+            deletionState.blocked = true;
+        } else if(categories.value.length == 1){
+            msg.value = msgs['cannot-delete-last-category'];
             deletionState.blocked = true;
         } else if (item.subcategories.length === 0) {
             msg.value = msgs['category-delete-msg'];

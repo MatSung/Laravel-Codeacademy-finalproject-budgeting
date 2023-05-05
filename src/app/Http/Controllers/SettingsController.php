@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 use App\Models\Entry;
+use App\Models\EntryCategory;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -50,7 +51,8 @@ class SettingsController extends Controller
      */
     public function purge()
     {
-        // todo
-        return back(303)->with('notification', 'Data purged.');
+        Entry::truncate();
+        // delete categories
+        return back(303)->with('notification', 'Data purged. (Yes really)');
     }
 }

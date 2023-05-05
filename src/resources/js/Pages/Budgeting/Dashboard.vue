@@ -13,7 +13,10 @@ const data = computed(() => usePage().props.data);
 const entries = computed(() => props.data.data);
 const filters = computed(() => props.filters);
 
-
+const style = {
+    position: 'relative',
+    width: '500px'
+};
 </script>
 
 <template>
@@ -23,12 +26,12 @@ const filters = computed(() => props.filters);
             <div class="bg-white pt-4 rounded-lg flex justify-center flex-row gap-8">
                 <div>
                     <h1 class="text-center mb-3 text-lg">Income</h1>
-                    <PieChart :stats="stats.income" :position="'left'"/>
+                    <PieChart :stats="stats.income" :position="'left'" :style="style" />
                     <!-- <p>total = this</p> -->
                 </div>
                 <div>
                     <h1 class="text-center mb-3 text-lg">Expenses</h1>
-                    <PieChart :stats="stats.expense" :position="'right'" />
+                    <PieChart :stats="stats.expense" :position="'right'" :style="style" />
                     <!-- <p>total = this</p> -->
                 </div>
             </div>

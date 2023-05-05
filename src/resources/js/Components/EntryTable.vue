@@ -9,6 +9,7 @@ import DeleteModal from '@/Components/DeleteModal.vue';
 import UpdateModal from '@/Components/EntryUpdateModal.vue';
 import BudgetEntryDayDivider from '@/Components/BudgetEntryDayDivider.vue';
 import Pagination from '@/Components/Pagination.vue';
+import EmptyTableOverlay from '@/Components/EmptyTableOverlay.vue';
 
 
 const props = defineProps(['entries', 'categories', 'grouping', 'pagination', 'filters']);
@@ -99,7 +100,12 @@ const symbol = computed(() => {
 
 <template>
     <div>
-        <table class="border-collapse table-fixed w-full text-md mb-4">
+        <template name="empty" v-if="entries.length == 0">
+                    <EmptyTableOverlay>
+                        <p>Your database is empty, </p><button @click="activateCreateModal" class="btn-primary">Add a new entry?</button>
+                    </EmptyTableOverlay>
+        </template>
+        <table v-else class="border-collapse table-fixed w-full text-md mb-4">
             <thead>
                 <tr>
                     <th class=" font-bold pl-2 pt-2 pb-3 text-white text-left bg-slate-800 lg:w-44 sm:w-28">
@@ -163,8 +169,11 @@ const symbol = computed(() => {
                         </template>
                     </BudgetEntryDayDivider>
                 </template>
+                
             </tbody>
-            <Teleport to="body">
+        </table>
+        <Pagination :links="pagination" />
+        <Teleport to="body">
                 <DeleteModal :show="deletionState.show" :target="deletionState.target" @close="deletionState.show = false">
                     <template #header>
                         <h3>Delete?</h3>
@@ -183,7 +192,5 @@ const symbol = computed(() => {
                     </template>
                 </UpdateModal>
             </Teleport>
-        </table>
-        <Pagination :links="pagination" />
     </div>
 </template>

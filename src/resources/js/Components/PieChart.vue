@@ -3,7 +3,7 @@ import { Pie } from 'vue-chartjs';
 import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale, Colors } from 'chart.js'
 import { computed } from 'vue';
 
-const props = defineProps(['stats', 'position']);
+const props = defineProps(['stats', 'position', 'style']);
 
 ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale, Colors);
 
@@ -38,10 +38,19 @@ const chartOptions = computed(() => {
 
   };
 });
+
+console.log(chartData.value);
+
+const style = props.style;
 </script>
 
 <template>
-  <div>
-    <Pie :data="chartData" :options="chartOptions" />
+  <div v-if="chartData.labels.length > 0">
+    <Pie :data="chartData" :options="chartOptions" :style="style"/>
+  </div>
+  <div v-else>
+    <div class="text-center m-5">
+      No data provided for the chart
+    </div>
   </div>
 </template>
