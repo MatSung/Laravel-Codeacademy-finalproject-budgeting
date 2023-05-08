@@ -5,7 +5,7 @@ const props = defineProps(['entry']);
 
 
 const entryTypeClass = computed(() => {
-    return props.entry.amount > 0 ? 'bg-income' : 'bg-expense';
+    return props.entry.amount > 0 ? 'text-positive' : 'text-negative';
 });
 
 const entryTypeName = computed(()=>{
@@ -19,14 +19,14 @@ const emit = defineEmits(['show-delete-modal', 'show-update-modal']);
 
 <template>
     <tr 
-    class="border-b-2"
-    :class="entryTypeClass"
+    class="border-b-2 border-gray-300 bg-gray-200"
+    
     >
         <td class="p-2">{{ entry.transaction_date }}</td>
         <td>{{ entryTypeName }}</td>
         <td>{{ entry.category.name }}</td>
         <td>{{ !entry.subcategory ? '' : entry.subcategory.name }}</td>
-        <td class="pl-3">{{ Math.abs(entry.amount).toFixed(2) }}</td>
+        <td class="pl-3 font-bold" :class="entryTypeClass">{{ Math.abs(entry.amount).toFixed(2) }}</td>
         <td>{{ entry.note }}</td>
         <td>
             <div class="flex gap-4 justify-end pr-4">

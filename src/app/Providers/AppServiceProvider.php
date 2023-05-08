@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Services\ExchangerateService;
+use GuzzleHttp\Client;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Support\Facades\File;
@@ -14,7 +16,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(ExchangerateService::class, function ($app){
+            $client = new Client();
+            return new ExchangerateService($client);
+        });
     }
 
     /**

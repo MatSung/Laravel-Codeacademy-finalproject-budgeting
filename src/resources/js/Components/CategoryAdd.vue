@@ -28,7 +28,9 @@ const form = useForm({
                 </div>
                 <InputError v-for="error in form.errors" :message="error" class="mt-2 col-span-full" />
                 <div class="flex justify-center mt-2">
-                    <PrimaryButton :disabled="form.processing">Create</PrimaryButton>
+                    <PrimaryButton :processing="form.processing">
+                        <template #text>Create</template>
+                    </PrimaryButton>
                 </div>
             </div>
         </form>

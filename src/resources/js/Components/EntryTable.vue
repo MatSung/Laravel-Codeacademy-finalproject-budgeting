@@ -95,12 +95,17 @@ const symbol = computed(() => {
     return sum.value < 0 ? '-' : (sum.value == 0) ? '±' : '+';
 });
 
+const isFiltered = computed(()=>{
+    return Object.values(form).every(value=>value == null);
+});
+
+// console.log(Object.values(form).every(value=>value == null));
 
 </script>
 
 <template>
     <div>
-        <template name="empty" v-if="entries.length == 0">
+        <template name="empty" v-if="entries.length == 0 && isFiltered">
                     <EmptyTableOverlay>
                         <p>Your database is empty, </p><button @click="activateCreateModal" class="btn-primary">Add a new entry?</button>
                     </EmptyTableOverlay>
@@ -172,6 +177,7 @@ const symbol = computed(() => {
                 
             </tbody>
         </table>
+        <div v-if="entries.length == 0 && !isFiltered" class="text-center font-bold bg-gray-200 -mt-4 p-3 uppercase">No results...</div>
         <Pagination :links="pagination" />
         <Teleport to="body">
                 <DeleteModal :show="deletionState.show" :target="deletionState.target" @close="deletionState.show = false">

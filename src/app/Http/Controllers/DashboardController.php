@@ -40,7 +40,7 @@ class DashboardController extends Controller
 
 
         // before any filters, orders, paginations, get one for all statistics
-        $entriesCol = $queryBuilder->get();
+        
 
         // filtering
         $queryBuilder->filter(Request::only('category', 'subcategory', 'income'));
@@ -62,7 +62,8 @@ class DashboardController extends Controller
         // dd($categories->toArray());
 
         // stats
-        $stats = Entry::sortedStats($entriesCol);
+        $thisMonthsData = Entry::query()->whereMonth('transaction_date', date('m'))->get();
+        $stats = Entry::sortedStats($thisMonthsData);
 
 
         return Inertia::render('Budgeting/Dashboard', [

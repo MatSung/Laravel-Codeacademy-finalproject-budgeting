@@ -6,14 +6,15 @@ import { computed } from '@vue/reactivity';
 
 const props = defineProps(['category', 'subcategories']);
 
-const category = props.category;
+const category = computed(()=>props.category);
  
 const adding = ref(false);
 
 const form = useForm({
     name: '',
-    parent_id: category.id
+    parent_id: category.value.id
 });
+
 
 </script>
 

@@ -2,6 +2,8 @@
 import { Pie } from 'vue-chartjs';
 import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale, Colors } from 'chart.js'
 import { computed } from 'vue';
+import { omitBy } from 'lodash';
+import {filter} from 'lodash';
 
 const props = defineProps(['stats', 'position', 'style']);
 
@@ -10,7 +12,7 @@ ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale,
 // prop template {[name: string, amount: float], [name: string, amount: float], ...} and it will change it to whatever is needed
 
 const chartData = computed(() => {
-  let data = props.stats;
+  let data = filter(props.stats, v => v.amount !== 0);
   return {
     labels: data.map(row => row.name),
     datasets: [
@@ -39,14 +41,12 @@ const chartOptions = computed(() => {
   };
 });
 
-console.log(chartData.value);
-
 const style = props.style;
 </script>
 
 <template>
   <div v-if="chartData.labels.length > 0">
-    <Pie :data="chartData" :options="chartOptions" :style="style"/>
+    <Pie :data="chartData" :options="chartOptions" :style="style" />
   </div>
   <div v-else>
     <div class="text-center m-5">

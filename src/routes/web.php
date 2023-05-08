@@ -5,6 +5,7 @@ use Illuminate\Http\RedirectResponse;
 use App\Http\Controllers\EntryController;
 use App\Http\Controllers\EntryCategoryController;
 use App\Http\Controllers\EntrySubcategoryController;
+use App\Http\Controllers\ExchangeController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\StatisticsController;
 use Illuminate\Support\Facades\Route;
@@ -59,6 +60,7 @@ Route::resource('/subcategories', EntrySubcategoryController::class, [
 
 Route::get('/statistics', StatisticsController::class)->name('statistics');
 
+Route::get('/exchange', ExchangeController::class)->name('exchange');
 
 Route::get('/about', function () {
     return Inertia::render('Budgeting/About');

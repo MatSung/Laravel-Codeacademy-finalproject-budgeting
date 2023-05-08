@@ -34,7 +34,7 @@ const form = useForm({
             <form @submit.prevent="form.post(route('import'), { onSuccess: () => { } })">
                 <input required type="file" accept=".json" name="file" id=""
                     @change="form.importFile = $event.target.files[0]">
-                <PrimaryButton :disabled="form.processing">Import</PrimaryButton>
+                <PrimaryButton :disabled="form.processing"><template #text>Import</template></PrimaryButton>
                 <InputError v-for="error in form.errors" :message="error" class="mt-2 col-span-full" />
                 <InputSuccess v-if="successMessage" :message="successMessage" />
             </form>

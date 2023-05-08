@@ -1,7 +1,7 @@
 <script setup>
 import PrimaryButton from '@/Components/Buttons/PrimaryButton.vue';
 import InputError from '@/Components/InputError.vue';
-import { Link, useForm } from '@inertiajs/vue3';
+import { Link, useForm, usePage } from '@inertiajs/vue3';
 import { computed, ref } from '@vue/reactivity';
 import { watch, reactive, toRefs } from 'vue';
 
@@ -33,7 +33,7 @@ watch(()=>props.prefill, ()=>{
                     <slot name="header">Update item</slot>
                 </div>
                 <form
-                    @submit.prevent="form.patch(target, { onSuccess: () => { form.reset(); $emit('close') }, preserveScroll: true }, { resetOnSuccess: false })">
+                    @submit.prevent="form.patch(target, { onSuccess: () => { form.reset(); $emit('close') }, preserveScroll: true }, { resetOnSuccess: false }, {only: ['categories']})">
                     <div>
                         <div>
                             <label for="name" class="block text-md font-medium leading-6 mb-2 text-gray-900">Name</label>
@@ -41,8 +41,12 @@ watch(()=>props.prefill, ()=>{
                         </div>
                         <InputError v-for="error in form.errors" :message="error" class="mt-2 col-span-full" />
                         <div class="flex justify-center mt-2 gap-2">
-                            <PrimaryButton :disabled="form.processing">Update</PrimaryButton>
-                            <PrimaryButton :disabled="form.processing" :type="'button'" @click="$emit('close')">Cancel</PrimaryButton>
+                            <PrimaryButton :processing="form.processing">
+                                <template #text>Update</template>
+                            </PrimaryButton>
+                            <PrimaryButton :disabled="form.processing" :type="'button'" @click="$emit('close')">
+                                <template #text>Cancel</template>
+                            </PrimaryButton>
                         </div>
                     </div>
                 </form>

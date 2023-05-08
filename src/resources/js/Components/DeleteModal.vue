@@ -35,7 +35,9 @@ const blockedClass = computed(()=>{
         <div class="flex-row gap-x-2 flex">
           <slot name="footer">
             <Link :href="target" :disabled="isBlocked" @click="$emit('close')" as="button" :class="blockedClass" method="delete">Delete</Link>
-            <PrimaryButton @click="$emit('close')">Cancel</PrimaryButton>
+            <PrimaryButton @click="$emit('close')">
+              <template #text>Cancel</template>
+            </PrimaryButton>
           </slot>
         </div>
       </div>

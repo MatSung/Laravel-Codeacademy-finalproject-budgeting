@@ -21,10 +21,6 @@ class EntryController extends Controller
      */
     public function index(Request $request): Response
     {
-        // add some variables to filter by date, amount, category and so on
-        // sorting
-        // pages
-        // by category?
 
         $orderBy = request('order_by');
         $pageSize = 15;
@@ -61,21 +57,14 @@ class EntryController extends Controller
         $data = $queryBuilder->paginate($pageSize)->withQueryString();
 
 
-        // entries
-        // $entries = $queryBuilder->get()->toArray();
-
-        // dd($data);
-
         // categories
         $categories = EntryCategory::with('subcategories')->get()->keyBy('id');
 
-        // dd($categories->toArray());
 
         return Inertia::render('Budgeting/Entries', [
             'data' => $data,
             'categories' => $categories,
             'filters' => RequestFacade::all('order', 'order_by', 'group_by', 'income', 'category', 'subcategory', 'page'),
-            // 'entries' => $data->items()
         ]);
     }
 

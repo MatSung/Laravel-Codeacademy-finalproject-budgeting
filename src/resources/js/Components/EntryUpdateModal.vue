@@ -128,13 +128,20 @@ const submitForm = () => {
           </div>
 
           <div class="flex-row gap-x-2 flex">
-            <PrimaryButton :disabled="form.processing">
-              <slot name="button">Update</slot>
+            <PrimaryButton :processing="form.processing">
+              <template #text>
+                <slot name="button">
+                  Update
+                </slot>
+              </template>
             </PrimaryButton>
-            <PrimaryButton :type="'button'" :disabled="form.processing" @click="$emit('close')">Cancel</PrimaryButton>
+            <PrimaryButton :type="'button'" :disabled="form.processing" @click="$emit('close')">
+              <template #text>Cancel</template>
+            </PrimaryButton>
           </div>
 
         </form>
       </div>
     </div>
-</Transition></template>
+  </Transition>
+</template>

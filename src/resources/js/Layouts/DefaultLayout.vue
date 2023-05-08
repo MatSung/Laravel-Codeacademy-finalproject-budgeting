@@ -55,7 +55,7 @@ import { Link } from '@inertiajs/vue3';
                                         Categories
                                     </NavLink>
                                     <NavLink :href="route('entries.index')" :active="route().current('entries.index')">
-                                        Entries
+                                        Transactions
                                     </NavLink>
 
                                     <NavLink :href="route('statistics')" :active="route().current('statistics')">
@@ -63,6 +63,10 @@ import { Link } from '@inertiajs/vue3';
                                     </NavLink>
                                 </div>
                                 <div class="flex justify-end space-x-4">
+                                    <NavLink :href="route('exchange')" :active="route().current('exchange')">
+                                        Exchange
+                                    </NavLink>
+
                                     <NavLink :href="route('about')" :active="route().current('about')">
                                         About
                                     </NavLink>

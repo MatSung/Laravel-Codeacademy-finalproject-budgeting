@@ -9,10 +9,11 @@ import StatisticsTable from '@/Components/StatisticsTable.vue';
 import { Head, usePage, useForm, Link } from '@inertiajs/vue3';
 import { computed } from '@vue/reactivity';
 import { ref } from 'vue';
+import {omitBy} from 'lodash';
 
 const props = defineProps(['stats']);
 
-const stats = props.stats;
+const stats = computed(() => usePage().props.stats);
 
 const style = {
     position: 'relative',
@@ -32,7 +33,7 @@ const style = {
                 </div>
                 <div>
                     <h1 class="text-center mb-3 text-lg">Expenses</h1>
-                    <PieChart :stats="stats.expense" :position="'right'" :style="style"/>
+                    <PieChart :stats="stats.expense" :position="'right'" :style="style" />
                 </div>
             </div>
             <div class="bg-white rounded-lg p-5 mb-5">

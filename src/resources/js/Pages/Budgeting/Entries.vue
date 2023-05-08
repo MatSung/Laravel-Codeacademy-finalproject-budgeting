@@ -16,7 +16,7 @@ const categories = computed(()=> props.categories);
 </script>
 
 <template>
-    <Head title="Entries" />
+    <Head title="Transactions" />
     <DefaultLayout>
         <BudgetEntryAddForm :categories="categories"/>
         <div class="container max-w-7xl mx-auto mt-8 rounded overflow-hidden">

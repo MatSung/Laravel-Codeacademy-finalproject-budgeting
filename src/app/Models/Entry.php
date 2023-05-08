@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class Entry extends Model
@@ -246,6 +247,29 @@ class Entry extends Model
         $stats['expense'] = collect($unsortedStats['expense'])->sortByDesc('amount')->values()->all();
 
         return $stats;
+    }
+
+    public static function getUsedYearsMonths(): array
+    {
+        $yearMonths = DB::table('entries')
+                    ->select(DB::raw('YEAR(transaction_date) as year'), DB::raw('MONTH(transaction_date) as month'))
+                    ->distinct()
+                    ->orderBy('year', 'desc')
+                    ->orderBy('month', 'desc')
+                    ->get();
+
+        $availableDates = [];
+
+        foreach ($yearMonths as $yearMonth) {
+            $year = $yearMonth->year;
+            $month = str_pad($yearMonth->month, 2, '0', STR_PAD_LEFT); // add leading zero if necessary
+            if (!array_key_exists($year, $availableDates)) {
+                $availableDates[$year] = [];
+            }
+            $availableDates[$year][] = $month;
+        }
+
+        return $availableDates;
     }
 
 

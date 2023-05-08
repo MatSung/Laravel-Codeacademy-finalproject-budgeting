@@ -8,6 +8,8 @@ use Inertia\Inertia;
 use Inertia\Response;
 use App\Models\Entry;
 use App\Models\EntryCategory;
+use App\Models\EntrySubcategory;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -52,7 +54,11 @@ class SettingsController extends Controller
     public function purge()
     {
         Entry::truncate();
-        // delete categories
+        Schema::disableForeignKeyConstraints();
+        EntrySubcategory::truncate();
+        EntryCategory::truncate();
+        Schema::enableForeignKeyConstraints();
+        EntryCategory::create(['name' => 'Category']);
         return back(303)->with('notification', 'Data purged. (Yes really)');
     }
 }

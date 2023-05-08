@@ -23,6 +23,9 @@ const style = {
     <Head title="Dashboard" />
     <DefaultLayout>
         <div class="container max-w-7xl mx-auto mt-8 rounded overflow-hidden">
+            <div class="mx-auto text-center">
+                <h1 class="text-xl font-bold bg-slate-800 p-2 rounded-t-lg text-white">This months statistics</h1>
+            </div>
             <div class="bg-white pt-4 rounded-lg flex justify-center flex-row gap-8">
                 <div>
                     <h1 class="text-center mb-3 text-lg">Income</h1>
@@ -36,7 +39,11 @@ const style = {
                 </div>
             </div>
         </div>
+        
         <div class="container max-w-7xl mx-auto mt-8 rounded overflow-hidden">
+            <div class="mx-auto text-center">
+                <h1 class="text-xl font-bold bg-slate-700 p-2 rounded-t-lg text-white">Recent transactions</h1>
+            </div>
             <EntryTable :categories="categories" :entries="entries" :grouping="filters.group_by == 'day'"
                 :pagination="data.links" :filters="filters"/>
         </div>
