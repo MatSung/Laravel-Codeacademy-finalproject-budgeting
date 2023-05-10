@@ -37,9 +37,6 @@ class DashboardController extends Controller
         $queryBuilder = Entry::query()
             ->select('entries.*')
             ->join('entry_categories', 'entry_categories.id', '=', 'entries.category_id');
-
-
-        // before any filters, orders, paginations, get one for all statistics
         
 
         // filtering
@@ -52,14 +49,8 @@ class DashboardController extends Controller
             $queryBuilder->orderBy($orderBy, $order);
         }
 
-
         // pagination
         $data = $queryBuilder->paginate($pageSize)->withQueryString();
-
-        // categories
-        $categories = EntryCategory::with('subcategories')->get()->keyBy('id');
-
-        // dd($categories->toArray());
 
         // stats
         $thisMonthsData = Entry::query()->whereMonth('transaction_date', date('m'))->get();
@@ -68,10 +59,9 @@ class DashboardController extends Controller
 
         return Inertia::render('Budgeting/Dashboard', [
             'data' => $data,
-            'categories' => $categories,
+            'categories' => EntryCategory::with('subcategories')->get()->keyBy('id'),
             'stats' => $stats,
             'filters' => Request::all('order', 'order_by', 'group_by', 'income', 'category', 'subcategory', 'page'),
-            // 'entries' => $data->items()
         ]);
     }
 

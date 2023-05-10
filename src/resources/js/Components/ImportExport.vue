@@ -6,7 +6,7 @@ import InputSuccess from '@/Components/InputSuccess.vue';
 import { computed } from 'vue';
 
 const successMessage = computed(() => {
-    return usePage().props.flash.notification;
+    return usePage().props.flash.notification?.import;
 });
 
 const form = useForm({

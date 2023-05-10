@@ -3,6 +3,7 @@
 import DefaultLayout from '@/Layouts/DefaultLayout.vue';
 import EntryTable from '@/Components/EntryTable.vue';
 import PieChart from '@/Components/PieChart.vue';
+import ExchangeRateBox from '@/Components/ExchangeRateBox.vue';
 import { useForm, Head, usePage } from '@inertiajs/vue3';
 import { computed, reactive } from '@vue/reactivity';
 import { watch } from 'vue';
@@ -37,6 +38,12 @@ const style = {
                     <PieChart :stats="stats.expense" :position="'right'" :style="style" />
                     <!-- <p>total = this</p> -->
                 </div>
+            </div>
+        </div>
+        <div class="container max-w-7xl mx-auto mt-8 rounded overflow-hidden">
+            <div class="mx-auto text-center">
+                <h1 class="text-xl font-bold bg-slate-800 p-2 rounded-t-lg text-white">Exchange rates today.</h1>
+                <ExchangeRateBox />
             </div>
         </div>
         

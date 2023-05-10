@@ -27,7 +27,7 @@ const emit = defineEmits(['show-delete-modal', 'show-update-modal']);
         <td>{{ entry.category.name }}</td>
         <td>{{ !entry.subcategory ? '' : entry.subcategory.name }}</td>
         <td class="pl-3 font-bold" :class="entryTypeClass">{{ Math.abs(entry.amount).toFixed(2) }}</td>
-        <td>{{ entry.note }}</td>
+        <td class="overflow-hidden text-ellipsis">{{ entry.note }}</td>
         <td>
             <div class="flex gap-4 justify-end pr-4">
                 <button class="w-4 inline-block" @click="$emit('show-update-modal', entry)">✏</button>

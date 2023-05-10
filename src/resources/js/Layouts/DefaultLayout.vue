@@ -63,9 +63,9 @@ import { Link } from '@inertiajs/vue3';
                                     </NavLink>
                                 </div>
                                 <div class="flex justify-end space-x-4">
-                                    <NavLink :href="route('exchange')" :active="route().current('exchange')">
+                                    <!-- <NavLink :href="route('exchange')" :active="route().current('exchange')">
                                         Exchange
-                                    </NavLink>
+                                    </NavLink> -->
 
                                     <NavLink :href="route('about')" :active="route().current('about')">
                                         About

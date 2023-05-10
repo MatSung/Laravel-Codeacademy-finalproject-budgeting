@@ -18,6 +18,8 @@
     },
     "dependencies": {
         "chart.js": "^4.2.1",
+        "chartjs-plugin-colorschemes": "^0.4.0",
+        "chartjs-plugin-datalabels": "^2.2.0",
         "lodash": "^4.17.21",
         "vue-chartjs": "^5.2.0"
     }

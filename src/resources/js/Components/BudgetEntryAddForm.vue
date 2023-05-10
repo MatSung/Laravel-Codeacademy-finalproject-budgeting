@@ -20,10 +20,6 @@ const form = useForm({
 
 const categorySelect = ref(null);
 
-const reset = () => {
-    form = mapValues(form, () => null);
-};
-
 
 
 </script>
@@ -31,7 +27,7 @@ const reset = () => {
 <template>
     <div class="container max-w-2xl mx-auto mt-8 border rounded overflow-hidden">
         <form
-            @submit.prevent="form.post(route('entries.store'), { onSuccess: () => { reset; } }, { resetOnSuccess: false })">
+            @submit.prevent="form.post(route('entries.store'), { onSuccess: form.reset }, { resetOnSuccess: false })">
             <div class="mx-auto bg-white p-8">
                 <div class="mx-auto grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-4">
                     <div class="col-span-2">

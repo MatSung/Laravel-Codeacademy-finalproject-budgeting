@@ -26,7 +26,7 @@ class SettingsController extends Controller
         $contents = json_decode(Storage::get($path), true);
         Storage::delete($path);
         Entry::importFromArray($contents);
-        return back(303)->with('notification','Success');
+        return back(303)->with('notification',['import' => 'Successfully imported.']);
     }
     
     /**
@@ -59,6 +59,6 @@ class SettingsController extends Controller
         EntryCategory::truncate();
         Schema::enableForeignKeyConstraints();
         EntryCategory::create(['name' => 'Category']);
-        return back(303)->with('notification', 'Data purged. (Yes really)');
+        return back(303)->with('notification', ['purge' => 'Data purged. (Yes really)']);
     }
 }

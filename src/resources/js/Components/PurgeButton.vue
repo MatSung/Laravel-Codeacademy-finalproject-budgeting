@@ -5,7 +5,7 @@ import { Link, usePage } from '@inertiajs/vue3';
 
 
 const successMessage = computed(() => {
-    return usePage().props.flash.notification;
+    return usePage().props.flash.notification?.purge;
 });
 
 const confirming = ref(false);

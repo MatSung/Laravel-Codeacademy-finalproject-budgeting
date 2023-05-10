@@ -81,10 +81,6 @@ watch(form, () => {
     router.get(usePage().url.split('?').shift(), pickBy(form), { preserveState: true });
 });
 
-const reset = () => {
-    form = mapValues(form, () => null);
-};
-
 const sum = computed(() => {
     return Object.values(props.entries)
         .reduce((total, obj) => obj.amount + total, 0)
